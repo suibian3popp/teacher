@@ -68,6 +68,22 @@
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
+            <!-- 统一管理Lombok版本 -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.30</version> <!-- 建议使用最新稳定版 -->
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- 测试依赖实际上不需要，因为spring-boot-starter-parent已管理 -->
+            <!-- 但可以显式声明以避免警告 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>3.2.4</version> <!-- 继承Spring Boot版本 -->
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
