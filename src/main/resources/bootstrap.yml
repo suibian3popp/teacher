@@ -1,0 +1,12 @@
+# src/main/resources/bootstrap.yml
+spring:
+  application:
+    name: teacher-center  # 服务名（必须）
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848  # Nacos地址
+        namespace: public            # 命名空间
+      config:
+        server-addr: 127.0.0.1:8848  # 配置中心地址
+        file-extension: yaml          # 配置格式
