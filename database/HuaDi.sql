@@ -1,3 +1,26 @@
+-- 先删除所有表（按依赖关系逆序删除）
+DROP TABLE IF EXISTS `system_log`;
+DROP TABLE IF EXISTS `operation_log`;
+DROP TABLE IF EXISTS `learning_analytics`;
+DROP TABLE IF EXISTS `submission`;
+DROP TABLE IF EXISTS `assignment_question`;
+DROP TABLE IF EXISTS `assignment`;
+DROP TABLE IF EXISTS `interaction`;
+DROP TABLE IF EXISTS `live_session`;
+DROP TABLE IF EXISTS `resource_sharing`;
+DROP TABLE IF EXISTS `resource`;
+DROP TABLE IF EXISTS `course_progress`;
+DROP TABLE IF EXISTS `chapter`;
+DROP TABLE IF EXISTS `course`;
+DROP TABLE IF EXISTS `user_role`;
+DROP TABLE IF EXISTS `role_permission`;
+DROP TABLE IF EXISTS `permission`;
+DROP TABLE IF EXISTS `role`;
+DROP TABLE IF EXISTS `login`;
+DROP TABLE IF EXISTS `user`;
+
+-- 然后重新创建所有表（按依赖关系顺序创建）
+
 -- 用户与权限模块
 CREATE TABLE `user` (
   `user_id` INT PRIMARY KEY AUTO_INCREMENT,
@@ -9,12 +32,12 @@ CREATE TABLE `user` (
   `last_login` DATETIME
 ) COMMENT '用户基本信息表';
 
-CREATE TABLE 'login'(
-	`user_id` INT PRIMARY KEY AUTO_INCREMENT,
-	`password` VARCHAR(100) NOT NULL,
-	`password_hash` VARCHAR(255) COMMENT 'BCrypt加密存储、可以为空，可以不做，做了就改一下',
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
-)COMMENT '用户登录表';
+CREATE TABLE `login`(
+  `user_id` INT PRIMARY KEY AUTO_INCREMENT,
+  `password` VARCHAR(100) NOT NULL,
+  `password_hash` VARCHAR(255) COMMENT 'BCrypt加密存储、可以为空，可以不做，做了就改一下',
+  FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
+) COMMENT '用户登录表';
 
 CREATE TABLE `role` (
   `role_id` INT PRIMARY KEY AUTO_INCREMENT,
