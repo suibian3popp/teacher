@@ -42,7 +42,7 @@
           :on-success="imageSuccess"
           :on-error="imageError"
           :file-list="imageFileList"
-          :action="`http://localhost:8080/api/user/image?id=${id}`"
+          :action="`http://localhost:8090/api/user/image?id=${id}`"
           :auto-upload="false"
           :show-file-list="true">
        <img v-if="imageUrl" :src="imageUrl" class="avatar"  alt=""/>
@@ -62,7 +62,7 @@
           :on-success="contractSuccess"
           :on-error="contractError"
           :file-list="contractFileList"
-          :action="`http://localhost:8080/api/user/contract?id=${id}`"
+          :action="`http://localhost:8090/api/user/contract?id=${id}`"
           :auto-upload="false"
           :show-file-list="true"
           :before-upload="beforeContractUpload"
@@ -117,7 +117,6 @@ onMounted(()=>{
     if(resp.data.code===200){
       userInfo.value = resp.data.data;
     }
-
   })
 })
 

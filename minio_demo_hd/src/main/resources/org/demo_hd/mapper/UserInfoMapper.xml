@@ -26,6 +26,7 @@
         <result property="address" column="address" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+
         <association property="userImageDO" javaType="org.demo_hd.entity.UserImage">
             <id property="id" column="iid" jdbcType="INTEGER"/>
             <result property="bucket" column="imageBucket" jdbcType="VARCHAR"/>

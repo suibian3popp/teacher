@@ -10,14 +10,13 @@ module.exports = defineConfig({
   }
 })
 
-// module.exports = {
-//   devServer: {
-//     proxy: {
-//       '/api': { // 匹配 /api 开头的请求
-//         target: 'http://localhost:8080', // 转发到后端端口
-//         changeOrigin: true, // 开启跨域
-//         pathRewrite: { '^/api': '' } // 去掉 /api 前缀（如果后端接口没有 /api ）
-//       }
-//     }
-//   }
-// };
+module.exports = {
+  devServer: {
+    proxy: {
+      '/api': { // 匹配 /api 开头的请求
+        target: 'http://localhost:8090', // 转发到后端端口
+        changeOrigin: true, // 开启跨域
+      }
+    }
+  }
+};

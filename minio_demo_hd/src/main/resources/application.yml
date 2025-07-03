@@ -3,7 +3,7 @@ spring:
     name: minio_demo_hd
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/minio?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/huadi?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
     username: root
     password: TZR112177...
   servlet:
@@ -23,7 +23,10 @@ minio:
   bucket: user-bucket
 
 server:
-  port: 8080
+  port: 8090
+
+
+
 
 
 

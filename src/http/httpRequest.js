@@ -1,12 +1,11 @@
 import axios from "axios";
 
 //后端java的http接口地址前缀
-axios.defaults.baseURL = "http://localhost:8080";
+axios.defaults.baseURL = "http://localhost:8090";
 
 /*
     axios发送get请求
-
-    @param url '/api/user'
+    @param url '/api/resources'
     @param params{
             ID:1234
         }

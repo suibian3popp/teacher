@@ -8,12 +8,12 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            component: () => import('@/views/UserView.vue')
+            component: () => import('@/views/UploadResource.vue')
         },
         {
             //动态路由,id是变量
-            path: '/edit/:id',
-            component: () => import('@/views/UserEditView.vue')
+            path: '/resourcesList',
+            component: () => import('@/views/ResourcesList.vue')
         }
     ]
 })
