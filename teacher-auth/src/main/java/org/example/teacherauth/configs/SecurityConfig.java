@@ -18,7 +18,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())  // 如果是 API 服务，可以禁用 CSRF
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll() // 放行注册和登录
+                        .requestMatchers("/auth/register", "/auth/login").permitAll() // 放行注册和登录
                         .anyRequest().authenticated() // 其他请求需要认证
                 );
         return http.build();

@@ -18,7 +18,7 @@ public class JwtFilterConfig {
     public FilterRegistrationBean<JwtAuthFilter> jwtFilter(JwtTokenProvider jwtTokenProvider) {
         FilterRegistrationBean<JwtAuthFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new JwtAuthFilter(jwtTokenProvider));
-        registrationBean.addUrlPatterns("/api/*");
+        registrationBean.addUrlPatterns("/auth/*");
         registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE); // 确保过滤器最先执行
         return registrationBean;
     }

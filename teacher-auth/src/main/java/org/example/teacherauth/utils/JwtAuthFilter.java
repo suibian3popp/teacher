@@ -24,9 +24,9 @@ public class JwtAuthFilter implements Filter {
 
     // 白名单路径（无需认证的接口）
     private static final List<String> WHITELIST = List.of(
-            "/api/auth/login",
-            "/api/auth/register",  // 添加注册接口
-            "/api/actuator/health"
+            "/auth/login",
+            "/auth/register",  // 添加注册接口
+            "/actuator/health"
     );
 
     /**
