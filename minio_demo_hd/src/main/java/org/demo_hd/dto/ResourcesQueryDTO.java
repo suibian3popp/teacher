@@ -16,4 +16,7 @@ public class ResourcesQueryDTO
     //分页参数
     private Integer page;//当前页码（从1开始）
     private Integer pageSize;//每页条数
+
+    //搜索关键词
+    private String keyword;
 }

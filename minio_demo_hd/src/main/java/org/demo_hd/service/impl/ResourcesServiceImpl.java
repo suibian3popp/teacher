@@ -2,6 +2,7 @@ package org.demo_hd.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.minio.MinioClient;
@@ -94,6 +95,17 @@ public class ResourcesServiceImpl extends ServiceImpl<ResourcesMapper, Resources
         }
         if(queryDTO.getDifficulty() != null&&!queryDTO.getDifficulty().isEmpty()){
             queryWrapper.eq(Resources::getDifficulty, queryDTO.getDifficulty());
+        }
+
+        //添加关键词搜索条件
+        if (StringUtils.isNotBlank(queryDTO.getKeyword())) {
+            queryWrapper.and(qw ->
+                    qw.like(Resources::getName, queryDTO.getKeyword())
+                            .or()
+                            .like(Resources::getType, queryDTO.getKeyword())
+                            .or()
+                            .like(Resources::getDifficulty, queryDTO.getKeyword())
+            );
         }
 
         //排序逻辑

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.demo_hd.mapper.CoursesMapper">
+
+    <resultMap id="BaseResultMap" type="org.demo_hd.entity.Courses">
+            <id property="courseId" column="course_id" />
+            <result property="name" column="name" />
+            <result property="teacherId" column="teacher_id" />
+            <result property="departmentId" column="department_id" />
+            <result property="semester" column="semester" />
+            <result property="description" column="description" />
+            <result property="courseType" column="course_type" />
+            <result property="coverImageResource" column="cover_image_resource" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        course_id,name,teacher_id,department_id,semester,description,
+        course_type,cover_image_resource
+    </sql>
+</mapper>

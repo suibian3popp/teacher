@@ -36,7 +36,7 @@ public class ResourcesController {
     @Resource
     private MinIOInfo minIOInfo;
 
-    //带筛选和分页的资源列表接口
+    //带筛选和分页的资源列表接口 以及搜索
     @GetMapping("/resource/list/{ownerId}")
     public R resourcesList(@PathVariable(value="ownerId") Integer ownerId,
             @ModelAttribute ResourcesQueryDTO queryDTO )  {

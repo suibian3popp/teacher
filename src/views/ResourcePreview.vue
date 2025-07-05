@@ -109,7 +109,7 @@ let context = null
 let pdfRenderingTask = null
 const textLoading = ref(false)
 
-//生命周期钩子 - 组件挂载时获取预览信息
+//生命周期钩子 组件挂载时获取预览信息
 onMounted(() => {
   fetchPreviewInfo()
 })

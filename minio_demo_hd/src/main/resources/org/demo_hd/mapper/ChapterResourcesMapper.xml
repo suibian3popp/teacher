@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.demo_hd.mapper.ChapterResourcesMapper">
+
+    <resultMap id="BaseResultMap" type="org.demo_hd.entity.ChapterResources">
+            <id property="id" column="id" />
+            <result property="chapterId" column="chapter_id" />
+            <result property="resourceId" column="resource_id" />
+            <result property="displayOrder" column="display_order" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,chapter_id,resource_id,display_order
+    </sql>
+</mapper>

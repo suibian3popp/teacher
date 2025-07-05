@@ -2,6 +2,24 @@
   <div class="resource-list-container">
     <h3 class="page-title" style="margin:auto; text-align: center">资源列表</h3>
 
+    <!-- 搜索框区域 -->
+    <el-row :gutter="20" style="margin-bottom: 20px;">
+      <el-col :span="6">
+        <el-form-item>
+          <el-input
+              v-model="filterForm.keyword"
+              placeholder="请输入资源名称、类型或难度关键词"
+              style="width: 100%"
+              @keyup.enter="fetchResources"
+          >
+            <template #append>
+              <el-button @click="fetchResources">搜索</el-button>
+            </template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
     <!-- 筛选区域 -->
     <el-form
         ref="filterFormRef"
@@ -219,6 +237,7 @@ const ownerId = ref(1000)
 
 //筛选表单数据
 const filterForm = reactive({
+  keyword: '', //新增关键词搜索字段
   difficulty: '', //资源难度
   type: '', //资源类型
   permission: '', //访问权限
@@ -332,6 +351,7 @@ const handleCurrentChange = (val) => {
 
 //重置筛选条件
 const resetFilter = () => {
+  filterForm.keyword = ''
   filterForm.difficulty = ''
   filterForm.type = ''
   filterForm.permission = ''
