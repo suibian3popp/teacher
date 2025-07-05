@@ -9,75 +9,90 @@
         label-width="100px"
         class="filter-form"
     >
-      <!-- 资源难度筛选 -->
-      <el-form-item label="资源难度">
-        <el-select
-            v-model="filterForm.difficulty"
-            placeholder="请选择难度"
-            style="width: 200px"
-        >
-          <el-option label="全部" value="" />
-          <el-option label="初级" value="beginner" />
-          <el-option label="中级" value="intermediate" />
-          <el-option label="高级" value="advanced" />
-        </el-select>
-      </el-form-item>
+      <el-row :gutter="20">
+        <el-col :span="4">
+          <!-- 资源难度筛选 -->
+          <el-form-item label="资源难度">
+            <el-select
+                v-model="filterForm.difficulty"
+                placeholder="请选择难度"
+                style="width: 200px"
+            >
+              <el-option label="全部" value="" />
+              <el-option label="初级" value="beginner" />
+              <el-option label="中级" value="intermediate" />
+              <el-option label="高级" value="advanced" />
+            </el-select>
+          </el-form-item>
+        </el-col>
 
-      <!-- 资源类型筛选 -->
-      <el-form-item label="资源类型">
-        <el-select
-            v-model="filterForm.type"
-            placeholder="请选择类型"
-            style="width: 200px"
-        >
-          <el-option label="全部" value="" />
-          <el-option label="课件" value="courseware" />
-          <el-option label="案例" value="case" />
-          <el-option label="作业" value="assignment" />
-          <el-option label="其他" value="other" />
-        </el-select>
-      </el-form-item>
+        <el-col :span="4">
+          <!-- 资源类型筛选 -->
+          <el-form-item label="资源类型">
+            <el-select
+                v-model="filterForm.type"
+                placeholder="请选择类型"
+                style="width: 200px"
+            >
+              <el-option label="全部" value="" />
+              <el-option label="课件" value="courseware" />
+              <el-option label="案例" value="case" />
+              <el-option label="作业" value="assignment" />
+              <el-option label="其他" value="other" />
+            </el-select>
+          </el-form-item>
+        </el-col>
 
-      <!-- 访问权限筛选 -->
-      <el-form-item label="访问权限">
-        <el-select
-            v-model="filterForm.permission"
-            placeholder="请选择权限"
-            style="width: 200px"
-        >
-          <el-option label="全部" value="" />
-          <el-option label="私人" value="private" />
-          <el-option label="院系可见" value="department" />
-          <el-option label="公开" value="public" />
-        </el-select>
-      </el-form-item>
+        <el-col :span="4">
+          <!-- 访问权限筛选 -->
+          <el-form-item label="访问权限">
+            <el-select
+                v-model="filterForm.permission"
+                placeholder="请选择权限"
+                style="width: 200px"
+            >
+              <el-option label="全部" value="" />
+              <el-option label="私人" value="private" />
+              <el-option label="院系可见" value="department" />
+              <el-option label="公开" value="public" />
+            </el-select>
+          </el-form-item>
+        </el-col>
 
-      <!-- 排序方式 -->
-      <el-form-item label="排序方式">
-        <el-select
-            v-model="filterForm.sortBy"
-            placeholder="请选择排序依据"
-            style="width: 200px"
-        >
-          <el-option label="创建时间" value="uploadTime" />
-          <el-option label="资源名称" value="name" />
-          <el-option label="文件大小" value="fileSize" />
-        </el-select>
-      </el-form-item>
+        <el-col :span="4">
+          <!-- 排序方式 -->
+          <el-form-item label="排序方式">
+            <el-select
+                v-model="filterForm.sortBy"
+                placeholder="请选择排序依据"
+                style="width: 200px"
+            >
+              <el-option label="创建时间" value="uploadTime" />
+              <el-option label="资源名称" value="name" />
+              <el-option label="文件大小" value="fileSize" />
+            </el-select>
+          </el-form-item>
+        </el-col>
 
-      <!-- 排序方向 -->
-      <el-form-item label="排序方向">
-        <el-radio-group v-model="filterForm.sortDir">
-          <el-radio value="asc">升序</el-radio>
-          <el-radio value="desc">降序</el-radio>
-        </el-radio-group>
-      </el-form-item>
+        <el-col :span="4">
+          <!-- 排序方向 -->
+          <el-form-item label="排序方向">
+            <el-radio-group v-model="filterForm.sortDir">
+              <el-radio value="asc">升序</el-radio>
+              <el-radio value="desc">降序</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
 
-      <!-- 操作按钮 -->
-      <el-form-item label="&nbsp">
-        <el-button type="primary" @click="fetchResources">查询</el-button>
-        <el-button type="success" plain @click="resetFilter">重置</el-button>
-      </el-form-item>
+        <el-col :span="4">
+            <!-- 操作按钮 -->
+            <el-form-item label="&nbsp">
+              <el-button type="primary" @click="fetchResources">查询</el-button>
+              <el-button type="success" plain @click="resetFilter">重置</el-button>
+            </el-form-item>
+        </el-col>
+      </el-row>
+
     </el-form>
 
     <!-- 加载状态 -->
@@ -95,12 +110,20 @@
         v-else
         :data="formattedResourceList"
         border
-        style="width: 100%; margin-top: 20px">
+        style="width: 100%; margin-top: 20px"
+        :row-style="() => ({ height: '20px' })">
+
+<!--      <el-table-column-->
+<!--          label="资源ID"-->
+<!--          width="120">-->
+<!--        <template #default="scope">-->
+<!--          {{ scope.row.resourceId }} -->
+<!--        </template>-->
+<!--      </el-table-column>-->
 
       <el-table-column
           label="资源名称"
           min-width="180">
-        <!-- 自定义渲染资源名称 -->
         <template #default="scope">
           {{ scope.row.name }}
         </template>
@@ -136,26 +159,27 @@
           width="180"
       />
 
-      <el-table-column
-          label="操作"
-          width="120">
+      <el-table-column label="操作" width="120">
         <template #default="scope">
           <el-button
               type="primary"
               size="small"
+              class="operation-btn"
               @click="handleDownload(scope.row.resourceId)">
             下载
           </el-button>
           <el-button
               type="info"
               size="small"
-              @click="handleView(scope.row.resourceId)">
+              class="operation-btn"
+              @click="handleView(scope.row)">
             查看
           </el-button>
           <el-button
               type="info"
               size="small"
-              @click="handleDelete(scope.row.resourceId)">
+              class="operation-btn"
+              @click="handleDelete(scope.row)">
             删除
           </el-button>
         </template>
@@ -244,7 +268,7 @@ const formatDateTime = (dateTime) => {
   return dayjs(dateTime).format('YYYY-MM-DD HH:mm:ss')
 }
 
-// 格式化后的列表（响应式，自动更新）
+//格式化后的列表（响应式，自动更新）
 const formattedResourceList = computed(() => {
   return  resourceList.value.map(item => ({
     ...item,
@@ -338,18 +362,22 @@ function handleDownload(resourceId){
 
 //资源查看
 const handleView = (row) => {
+  console.log('当前行数据：', row);
+  const resourceId=row.resourceId;
+  if (resourceId === undefined) {
+    ElMessage.error('资源ID获取失败，请检查数据');
+    return;
+  }
   router.push({
-    path: '/resource/view',
-    query: {
-      id: row.id,
-      type: row.type
-    }
+    path: '/resource/preview',
+    query:{id:resourceId,
+            ownerId:ownerId.value}
   })
 }
 
 //删除
-function handleDelete(id) {
-  doDelete("/api/resource/" + id).then((resp) => {
+function handleDelete(row) {
+  doDelete("/api/resource/delete/" + row.resourceId).then((resp) => {
     if (resp.data.code === 200) {
       //删除成功
       ElMessage({
@@ -387,5 +415,9 @@ function handleDelete(id) {
   margin-bottom: 10px;
   padding: 10px 0;
   border-bottom: 1px solid #eee;
+}
+.operation-btn {
+  display: inline-block;
+  margin-right: 6px;
 }
 </style>

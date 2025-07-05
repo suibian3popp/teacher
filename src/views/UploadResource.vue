@@ -256,7 +256,7 @@ function goBack(){
 }
 
 function gotoResourcesList() {
-  router.push("/resourcesList");
+  router.push('/resource/list/' + ownerId.value);
 }
 
 </script>

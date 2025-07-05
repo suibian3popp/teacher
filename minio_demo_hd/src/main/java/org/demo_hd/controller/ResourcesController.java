@@ -3,13 +3,13 @@ package org.demo_hd.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.minio.*;
 import io.minio.errors.*;
+import io.minio.http.Method;
 import io.minio.messages.Item;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.demo_hd.config.MinIOInfo;
 import org.demo_hd.dto.ResourcesQueryDTO;
 import org.demo_hd.entity.Resources;
-import org.demo_hd.entity.UserInfo;
 import org.demo_hd.result.R;
 import org.demo_hd.service.ResourcesService;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +19,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api")
@@ -84,14 +80,14 @@ public class ResourcesController {
         //检查存储桶是否存在，不存在则创建
         if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
-            System.out.println("创建存储桶: "+bucketName);
+            System.out.println("创建存储桶: " + bucketName);
         }
 
         //查询存储桶中已有的、基础名匹配的文件数量
         int existingCount = 0;
         Iterable<Result<Item>> results = minioClient.listObjects(ListObjectsArgs.builder()
                 .bucket(bucketName)
-                .prefix(originalFilename.replaceAll("\\..*$",""))//按基础名前缀查询
+                .prefix(originalFilename.replaceAll("\\..*$", ""))//按基础名前缀查询
                 .build());
         for (Result<Item> result : results) {
 //            Item item = result.get();
@@ -120,7 +116,7 @@ public class ResourcesController {
                 .contentType(file.getContentType())
                 .stream(file.getInputStream(), file.getSize(), -1)
                 .build());
-        System.out.println("MinIO上传成功: "+response);
+        System.out.println("MinIO上传成功: " + response);
 
         //保存资源信息到数据库
         resourcesService.saveResources(
@@ -134,9 +130,7 @@ public class ResourcesController {
                 permission);
 
         return R.OK();
-
     }
-
 //    //检验上传的文件名
 //    @GetMapping("/resource/checkName")
 //    public R checkResourceName(@RequestParam("ownerId") Integer ownerId,
@@ -171,6 +165,99 @@ public class ResourcesController {
         getObjectResponse.transferTo(response.getOutputStream());
 
     }
+
+    //资源预览
+    @GetMapping("/resource/preview/{resourceId}")
+    public R previewResource(@PathVariable("resourceId") Integer resourceId) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        //获取资源信息
+        Resources resource = resourcesService.getById(resourceId);
+        if(resource==null) return R.FAIL();
+
+        String bucket = resource.getBucket();
+        String object = resource.getObjectKey();
+        String fileName=resource.getName();
+
+        //获取文件后缀名
+        String suffix = getFileSuffix(fileName);
+
+        //构建预览链接
+        String previewUrl;
+        //根据后缀判断文件类型 生成不同的文件预览方式
+        if(isImageType(suffix)){
+            //图片类型直接生成预览链接
+            previewUrl=minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs
+                    .builder()
+                    .bucket(bucket)
+                    .object(object)
+                    .method(Method.GET)
+                    .expiry(60*60)//链接有效期
+                    .build());
+        }else if(isTextType(suffix)){
+            previewUrl=minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs
+                    .builder()
+                    .bucket(bucket)
+                    .object(object)
+                    .method(Method.GET)
+                    .build());
+        }else if(isPdfType(suffix)){
+            previewUrl=minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs
+                    .builder()
+                    .bucket(bucket)
+                    .object(object)
+                    .method(Method.GET)
+                    .build());
+        }else{
+            //其他类型不支持预览 返回下载链接
+            previewUrl=minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+                    .method(Method.GET)
+                    .bucket(bucket)
+                    .object(object)
+                    .method(Method.GET)
+                    .expiry(60*60)
+                    .build());
+        }
+        //封装返回结果
+        Map<String, Object> result = new HashMap<>();
+        result.put("previewUrl", previewUrl);
+        result.put("fileName", fileName);
+        result.put("fileType", suffix);
+
+        return R.OK(result);
+    }
+
+    //删除
+    @DeleteMapping("/resource/delete/{resourceId}")
+    public R delResource(@PathVariable(value = "resourceId") Integer resourceId) {
+        try{
+            boolean del = resourcesService.delResourceById(resourceId);
+            return del?R.OK():R.FAIL();
+        }catch (Exception e){
+            e.printStackTrace();
+            return R.FAIL();
+        }
+
+    }
+
+    //判断是否为图片类型
+    private boolean isImageType(String suffix) {
+        suffix=suffix.replace(".","").toLowerCase();
+        return "jpg,jpeg,png,gif,bmp,webp".contains(suffix);
+    }
+
+    //判断是否为文本类型
+    private boolean isTextType(String suffix) {
+        suffix=suffix.replace(".","").toLowerCase();
+        return "txt,md,json,xml,html,css,js".contains(suffix);
+    }
+
+    //判断是否为PDF类型
+    private boolean isPdfType(String suffix) {
+        suffix=suffix.replace(".","").toLowerCase();
+        return "pdf".equals(suffix);
+    }
+
+
+
 
 }
 

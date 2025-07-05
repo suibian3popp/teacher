@@ -37,7 +37,6 @@ export function doPut(url,params){
 }
 
 export function doDelete(url,params){
-    //get方法
     return axios.delete(url,{ params})
         .then(response=> {
             if(response.data.code === 200){

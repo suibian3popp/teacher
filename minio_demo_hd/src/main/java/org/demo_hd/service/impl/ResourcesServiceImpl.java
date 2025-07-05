@@ -4,23 +4,48 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.minio.MinioClient;
+import io.minio.RemoveObjectArgs;
+import io.minio.errors.*;
 import jakarta.annotation.Resource;
 import org.demo_hd.dto.ResourcesQueryDTO;
 import org.demo_hd.entity.Resources;
 import org.demo_hd.service.ResourcesService;
 import org.demo_hd.mapper.ResourcesMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigInteger;
-import java.util.List;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 @Service
 public class ResourcesServiceImpl extends ServiceImpl<ResourcesMapper, Resources>
     implements ResourcesService{
 
     @Resource
+    private MinioClient minioClient;
+
+    @Resource
     private ResourcesMapper resourcesMapper;
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean delResourceById(Integer resourceId) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        Resources resource = resourcesMapper.selectById(resourceId);
+
+        int delResource = resourcesMapper.deleteById(resourceId);
+
+        if (null != resource) {
+            //删除MinIO服务器上的文件 (删除头像)
+            minioClient.removeObject(RemoveObjectArgs.builder()
+                    .bucket(resource.getBucket())
+                    .object(resource.getObjectKey())
+                    .build());
+        }
+        return (delResource >= 1);
+    }
 
     @Override
     public void saveResources(Integer ownerId,
@@ -55,8 +80,6 @@ public class ResourcesServiceImpl extends ServiceImpl<ResourcesMapper, Resources
 
     @Override
     public Page<Resources> viewList(Integer ownerId, ResourcesQueryDTO queryDTO) {
-        //构建分页对象
-        Page<Resources> page = new Page<>(queryDTO.getPage(), queryDTO.getPageSize());
 
         //构建查询条件
         LambdaQueryWrapper<Resources> queryWrapper = new LambdaQueryWrapper<>();

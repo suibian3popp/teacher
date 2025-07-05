@@ -12,8 +12,14 @@ const router = createRouter({
         },
         {
             //动态路由,id是变量
-            path: '/resourcesList',
+            path: '/resource/list/:ownerId',
             component: () => import('@/views/ResourcesList.vue')
+        },
+        {
+            path: '/resource/preview',
+            name: 'ResourcePreview',
+            component: () => import('@/views/ResourcePreview.vue'),
+            meta: { title: '资源预览' }
         }
     ]
 })
