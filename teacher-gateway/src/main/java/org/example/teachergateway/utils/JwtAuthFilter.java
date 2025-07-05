@@ -1,4 +1,4 @@
-package org.example.teachergateway.filters;
+package org.example.teachergateway.utils;
 
 import org.example.teachercommon.entity.JwtUserInfo;
 import org.example.teachercommon.utils.JwtTokenProvider;

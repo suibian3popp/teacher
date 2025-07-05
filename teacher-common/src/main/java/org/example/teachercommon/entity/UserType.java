@@ -1,9 +1,9 @@
 package org.example.teachercommon.entity;
 
 public enum UserType {
-    TEACHER("teacher"),
-    TA("ta"),
-    DEPARTMENT_ADMIN("department_admin");
+    teacher("teacher"),
+    ta("ta"),
+    department_admin("department_admin");
 
     private final String value;
 

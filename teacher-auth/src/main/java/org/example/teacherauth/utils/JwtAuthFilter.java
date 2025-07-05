@@ -7,8 +7,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.teachercommon.entity.JwtUserInfo;
 import org.example.teachercommon.utils.JwtTokenProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,7 +79,13 @@ public class JwtAuthFilter implements Filter {
             // 3. 将用户关键信息注入请求属性（供后续Controller使用）
             injectUserInfoToRequest(httpRequest, userInfo);
 
-            // 4. 放行到下一个过滤器/控制器
+            // 4.将信息注入Security中
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    userInfo.getUsername(), null, new ArrayList<>());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            System.out.println("将信息注入Security中");
+
+            // 5. 放行到下一个过滤器/控制器
             chain.doFilter(request, response);
 
         } catch (ExpiredJwtException ex) {
@@ -93,8 +102,11 @@ public class JwtAuthFilter implements Filter {
     private String extractBearerToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
         if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
+            System.out.println("----------测试------------");
+            System.out.println("token:"+header.substring(7));
             return header.substring(7); // 去除"Bearer "前缀
         }
+        System.out.println("失败");
         return null;
     }
 
@@ -103,8 +115,11 @@ public class JwtAuthFilter implements Filter {
      */
     private void injectUserInfoToRequest(HttpServletRequest request, JwtUserInfo userInfo) {
         request.setAttribute("userId", userInfo.getUserId());
+        System.out.println("用户ID"+userInfo.getUserId());
         request.setAttribute("username", userInfo.getUsername());
+        System.out.println("用户名"+userInfo.getUsername());
         request.setAttribute("userType", userInfo.getUserType());
+        System.out.println("用户类型"+userInfo.getUserType());
         // 可根据需要添加更多属性
     }
 

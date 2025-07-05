@@ -1,8 +1,8 @@
-package org.example.teacherservice.common.advice;
+package org.example.teacherservice.advice;
 
-import org.example.teacherservice.common.exception.BusinessException;
-import org.example.teacherservice.common.response.CommonResponse;
-import org.example.teacherservice.common.response.ResponseCode;
+import org.example.teacherservice.exception.BusinessException;
+import org.example.teacherservice.response.CommonResponse;
+import org.example.teacherservice.response.ResponseCode;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

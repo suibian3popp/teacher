@@ -42,16 +42,18 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
+        System.out.println("进入登录功能");
         // 1. 根据用户名查找用户
-        User user = userService.getUserByUsername(request.getUsername());
+        User user = userService.getUserById(request.getUserId());
 
         // 用户不存在返回401
         if (user == null) {
+            System.out.println("用户不存在");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
         // 2. 验证密码是否正确
         if (!userService.checkPassword(user.getUserId(), request.getPassword())) {
+            System.out.println("密码不正确");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -72,7 +74,8 @@ public class AuthController {
                         user.getUserId(),
                         user.getUsername(),
                         user.getUserType(),
-                        user.getRealName()
+                        user.getRealName(),
+                        user.getDepartmentName()
                 )
         );
     }
@@ -99,19 +102,28 @@ public class AuthController {
      */
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
+        System.out.println("进入获取所有用户列表功能");
         List<User> users = userService.getAllUsers();
+        System.out.println("---------------结果------------");
+        for (User user : users) {
+            System.out.println(user.getUsername());
+            System.out.println(user.getUserId());
+        }
         return ResponseEntity.ok(users);
     }
 
     /**
      * 根据用户ID获取用户详情
      * @param userId 用户ID
-     * @return 用户详细信息，状态码200
+     * @return 用户详细信息（存在返回200，不存在返回404）
      */
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable Integer userId) {
         User user = userService.getUserById(userId);
-        return ResponseEntity.ok(user);
+        if (user == null) {
+            return ResponseEntity.notFound().build(); // 返回404
+        }
+        return ResponseEntity.ok(user); // 返回200 + 用户数据
     }
 
     /**
@@ -148,6 +160,7 @@ public class AuthController {
     @GetMapping("/department/{departmentId}")
     public ResponseEntity<List<User>> getUsersByDepartment(
             @PathVariable Integer departmentId) {
+        System.out.println("进入根据部门ID查询用户列表功能");
         List<User> users = userService.getUsersByDepartment(departmentId);
         return ResponseEntity.ok(users);
     }
@@ -160,6 +173,7 @@ public class AuthController {
     @GetMapping("/type/{userType}")
     public ResponseEntity<List<User>> getUsersByType(
             @PathVariable String userType) {
+        System.out.println("进入根据用户类型查询用户列表功能");
         List<User> users = userService.getUsersByType(userType);
         return ResponseEntity.ok(users);
     }
@@ -174,6 +188,7 @@ public class AuthController {
     public ResponseEntity<Void> resetPassword(
             @PathVariable Integer userId,
             @RequestParam String newPassword) {
+        System.out.println("进入重置用户密码功能");
         userService.resetPassword(userId, newPassword);
         return ResponseEntity.ok().build();
     }

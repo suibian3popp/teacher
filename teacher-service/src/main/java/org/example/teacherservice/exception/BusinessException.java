@@ -1,7 +1,7 @@
-package org.example.teacherservice.common.exception;
+package org.example.teacherservice.exception;
 
 
-import org.example.teacherservice.common.response.ResponseCode;
+import org.example.teacherservice.response.ResponseCode;
 import lombok.Getter;
 
 @Getter

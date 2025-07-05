@@ -47,13 +47,13 @@ class AuthControllerTest {
     void login_Success() {
         // 准备测试数据
         LoginRequestDTO request = new LoginRequestDTO();
-        request.setUsername("testuser");
+        request.setUserId(1);
         request.setPassword("password123");
 
         User mockUser = new User();
         mockUser.setUserId(1);
         mockUser.setUsername("testuser");
-        mockUser.setUserType(UserType.TEACHER);
+        mockUser.setUserType(UserType.teacher);
         mockUser.setRealName("Test User");
 
         LoginAuth mockLoginAuth = new LoginAuth();
@@ -76,36 +76,36 @@ class AuthControllerTest {
         assertEquals("Bearer", response.getBody().getTokenType());
         assertEquals(1, response.getBody().getUserId());
         assertEquals("testuser", response.getBody().getUsername());
-        assertEquals(UserType.TEACHER, response.getBody().getUserType());
+        assertEquals(UserType.teacher, response.getBody().getUserType());
         assertEquals("Test User", response.getBody().getRealName());
 
         // 验证方法调用
         verify(userService).getUserByUsername("testuser");
         verify(userService).checkPassword(1, "password123");
         verify(userService).updateLastLoginTime(1);
-        verify(jwtTokenProvider).generateToken(1, "testuser", UserType.TEACHER);
+        verify(jwtTokenProvider).generateToken(1, "testuser", UserType.teacher);
     }
 
     @Test
     void login_UserNotFound() {
         LoginRequestDTO request = new LoginRequestDTO();
-        request.setUsername("nonexistent");
+        request.setUserId(1);
         request.setPassword("password123");
 
-        when(userService.getUserByUsername("nonexistent")).thenReturn(null);
+        when(userService.getUserById(1)).thenReturn(null);
 
         ResponseEntity<LoginResponseDTO> response = authController.login(request);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertNull(response.getBody());
-        verify(userService).getUserByUsername("nonexistent");
+        verify(userService).getUserById(1);
         verify(userService, never()).checkPassword(anyInt(), anyString());
     }
 
     @Test
     void login_WrongPassword() {
         LoginRequestDTO request = new LoginRequestDTO();
-        request.setUsername("testuser");
+        request.setUserId(1);
         request.setPassword("wrongpassword");
 
         User mockUser = new User();
@@ -119,7 +119,7 @@ class AuthControllerTest {
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertNull(response.getBody());
-        verify(userService).getUserByUsername("testuser");
+        verify(userService).getUserById(1);
         verify(userService).checkPassword(1, "wrongpassword");
         verify(userService, never()).updateLastLoginTime(anyInt());
     }
@@ -131,14 +131,14 @@ class AuthControllerTest {
         userCreateDTO.setUsername("newuser");
         userCreateDTO.setPassword("password123");
         userCreateDTO.setRealName("New User");
-        userCreateDTO.setType(UserType.TEACHER);
+        userCreateDTO.setType(UserType.teacher);
         userCreateDTO.setEmail("newuser@example.com");
 
         User mockUser = new User();
         mockUser.setUserId(2);
         mockUser.setUsername("newuser");
         mockUser.setRealName("New User");
-        mockUser.setUserType(UserType.TEACHER);
+        mockUser.setUserType(UserType.teacher);
         mockUser.setEmail("newuser@example.com");
 
         when(userService.createUser(userCreateDTO)).thenReturn(mockUser);
@@ -150,7 +150,7 @@ class AuthControllerTest {
         assertNotNull(response.getBody());
         assertEquals(2, response.getBody().getUserId());
         assertEquals("newuser", response.getBody().getUsername());
-        assertEquals(UserType.TEACHER, response.getBody().getUserType());
+        assertEquals(UserType.teacher, response.getBody().getUserType());
         assertEquals("newuser@example.com", response.getBody().getEmail());
 
         verify(userService).createUser(userCreateDTO);
@@ -264,11 +264,11 @@ class AuthControllerTest {
     void getUsersByType_Success() {
         User user1 = new User();
         user1.setUserId(1);
-        user1.setUserType(UserType.TEACHER);
+        user1.setUserType(UserType.teacher);
 
         User user2 = new User();
         user2.setUserId(2);
-        user2.setUserType(UserType.TEACHER);
+        user2.setUserType(UserType.teacher);
 
         List<User> userList = Arrays.asList(user1, user2);
 
@@ -279,8 +279,8 @@ class AuthControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(2, response.getBody().size());
-        assertEquals(UserType.TEACHER, response.getBody().get(0).getUserType());
-        assertEquals(UserType.TEACHER, response.getBody().get(1).getUserType());
+        assertEquals(UserType.teacher, response.getBody().get(0).getUserType());
+        assertEquals(UserType.teacher, response.getBody().get(1).getUserType());
 
         verify(userService).getUsersByType("TEACHER");
     }

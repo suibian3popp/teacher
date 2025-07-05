@@ -56,14 +56,22 @@ public class UserServiceImpl implements UserService {
 
         loginAuthMapper.insert(loginAuth);
         user.setDepartmentName(this.getDepartmentNameById(userCreateDTO.getDepartmentId()));
-
+        System.out.println("院系名字："+user.getDepartmentName());
         return user;
     }
 
     @Override
     public User getUserById(Integer userId) {
         User user = userMapper.selectById(userId);
-        user.setDepartmentName(this.getDepartmentNameById(user.getDepartmentId()));
+        System.out.println("通过用户ID找User用户===========================");
+        System.out.println(user.getDepartmentId());
+        System.out.println(user.getUserId());
+        System.out.println(user.getRealName());
+        if(user.getDepartmentId() != null) {
+            user.setDepartmentName(this.getDepartmentNameById(user.getDepartmentId()));
+        }
+        System.out.println("院系ID"+user.getDepartmentId());
+        System.out.println("院系名字："+user.getDepartmentName());
         return user;
     }
 
@@ -72,13 +80,37 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
                 .eq(User::getUsername, username));
         user.setDepartmentName(this.getDepartmentNameById(user.getDepartmentId()));
+        System.out.println("院系名字："+user.getDepartmentName());
         return user;
     }
 
     @Override
     public User updateUser(User user) {
+        User newUser = getUserById(user.getUserId());
+        if(newUser == null) {
+            return null;
+        }
+        if(user.getUserId()==null){
+            user.setUserId(newUser.getUserId());
+        }
+        if(user.getRealName() == null) {
+            user.setRealName(newUser.getRealName());
+        }
+        if(user.getEmail() == null) {
+            user.setEmail(newUser.getEmail());
+        }
+        if(user.getDepartmentId() == null) {
+            user.setDepartmentId(newUser.getDepartmentId());
+        }
+        if(user.getPhone() == null) {
+            user.setPhone(newUser.getPhone());
+        }
+        if(user.getUserType() == null) {
+            user.setUserType(newUser.getUserType());
+        }
         userMapper.updateById(user);
         user.setDepartmentName(this.getDepartmentNameById(user.getDepartmentId()));
+        System.out.println("院系名字："+user.getDepartmentName());
         return user;
     }
 
@@ -104,6 +136,9 @@ public class UserServiceImpl implements UserService {
                 // 为每个用户单独查询院系名称
                 String deptName = departmentMapper.selectDepartmentNameById(user.getDepartmentId());
                 user.setDepartmentName(deptName);
+                System.out.println("院系名字："+user.getDepartmentName());
+                System.out.println(user.getUserId());
+                System.out.println(user.getUsername());
             }
         }
 
@@ -121,6 +156,7 @@ public class UserServiceImpl implements UserService {
         for (User user : users) {
             if (user.getDepartmentId() != null) {
                 user.setDepartmentName(departmentMapper.selectDepartmentNameById(departmentId));
+                System.out.println("院系名字："+user.getDepartmentName());
             }
         }
         return users;
@@ -181,9 +217,13 @@ public class UserServiceImpl implements UserService {
                 Wrappers.<LoginAuth>lambdaQuery()
                         .eq(LoginAuth::getUserId, userId)
         );
+        System.out.println("------------数据库中信息-------------");
+        System.out.println("数据库中明文密码"+loginAuth.getPassword());
+        System.out.println("存储哈希"+loginAuth.getPasswordHash());
+        System.out.println("输入密码"+rawPassword);
+        Boolean isMatch = passwordEncoder.matches(rawPassword, loginAuth.getPasswordHash());
         // 2. 验证密码是否存在且匹配
-        return loginAuth != null &&
-                passwordEncoder.matches(rawPassword, loginAuth.getPasswordHash());
+        return loginAuth != null && isMatch;
     }
 
     /**
@@ -192,6 +232,23 @@ public class UserServiceImpl implements UserService {
      * @return 院系名称，如果不存在返回null
      */
     public String getDepartmentNameById(Integer departmentId) {
-        return departmentMapper.selectDepartmentNameById(departmentId);
+        System.out.println("院系ID"+departmentId);
+        String departmentName = departmentMapper.selectDepartmentNameById(departmentId);
+        System.out.println("院系名字"+departmentName);
+        return departmentName;
+    }
+
+    /**
+     * 判断用户存不存在
+     * @param userId
+     * @return
+     */
+    public Boolean isUserExist(Integer userId) {
+        boolean isExist = false;
+        User user = userMapper.selectById(userId);
+        if(user != null) {
+            isExist = true;
+        }
+        return isExist;
     }
 }

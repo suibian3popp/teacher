@@ -1,4 +1,4 @@
-package org.example.teacherservice.common.response;
+package org.example.teacherservice.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
