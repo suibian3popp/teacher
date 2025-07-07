@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.online.mapper.SessionAttendanceMapper">
+
+    <resultMap id="BaseResultMap" type="org.example.online.entity.SessionAttendance">
+            <id property="attendanceId" column="attendance_id" />
+            <result property="sessionId" column="session_id" />
+            <result property="studentId" column="student_id" />
+            <result property="joinTime" column="join_time" />
+            <result property="leaveTime" column="leave_time" />
+            <result property="duration" column="duration" />
+            <result property="interactionCount" column="interaction_count" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        attendance_id,session_id,student_id,join_time,leave_time,duration,
+        interaction_count
+    </sql>
+</mapper>
