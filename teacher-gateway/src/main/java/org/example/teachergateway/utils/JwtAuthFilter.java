@@ -54,6 +54,7 @@ public class JwtAuthFilter implements GlobalFilter {
         JwtUserInfo userInfo = jwtTokenProvider.parseTokenToUserInfo(token);
         exchange.getRequest().mutate()
                 .header("X-User-Id", String.valueOf(userInfo.getUserId())) // 转换为String
+                .header("X-User-Name", userInfo.getUsername())
                 .header("X-User-Roles", userInfo.getUserType())
                 .build();
 

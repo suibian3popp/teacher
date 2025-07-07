@@ -49,6 +49,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("userId", userId)
+                .claim("username", username)
                 .claim("userType", userType.name())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
