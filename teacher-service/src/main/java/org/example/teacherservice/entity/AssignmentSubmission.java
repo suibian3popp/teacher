@@ -12,8 +12,8 @@ public class AssignmentSubmission {
     @TableId(value = "submission_id", type = IdType.AUTO)
     private Integer submissionId;
 
-    @TableField("assignment_id")
-    private Integer assignmentId;
+    @TableField("assignment_class_id")
+    private Integer assignmentClassId;
 
     @TableField("student_id")
     private Integer studentId;

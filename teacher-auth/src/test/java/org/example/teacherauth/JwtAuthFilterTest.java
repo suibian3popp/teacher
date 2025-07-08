@@ -60,7 +60,7 @@ public class JwtAuthFilterTest {
         userInfo = JwtUserInfo.builder()
                 .userId(1)
                 .username("testuser")
-                .userType(UserType.TA.name())
+                .userType(UserType.ta.name())
                 .issuedAt(new Date())
                 .expiresAt(new Date(System.currentTimeMillis() + 3600000))
                 .build();

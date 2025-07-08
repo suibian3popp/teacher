@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class AssignmentSubmitDTO {
     @NotNull(message = "作业ID不能为空")
-    private Integer assignmentId;
+    private Integer assignmentClassId;
 
     @NotNull(message = "学生ID不能为空")
     private Integer studentId;

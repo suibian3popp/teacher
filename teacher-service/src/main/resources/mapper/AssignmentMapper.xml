@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.teacherservice.mapper.AssignmentMapper">
+    <!-- 1. 统计创建者的作业数量 -->
+    <select id="countByCreatorId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM assignments WHERE creator_id = #{creatorId}
+    </select>
+
+    <!-- 2. 分页查询创建者的作业 -->
+    <select id="selectByCreatorId" resultType="org.example.teacherservice.entity.Assignment">
+        SELECT *
+        FROM assignments
+        WHERE creator_id = #{creatorId}
+        ORDER BY create_time DESC
+            LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 3. 根据资源ID查询作业 -->
+    <select id="selectByResourceId" resultType="org.example.teacherservice.entity.Assignment">
+        SELECT * FROM assignments WHERE resource_id = #{resourceId}
+    </select>
+
+    <!-- 4. 复杂搜索（动态SQL） -->
+    <select id="searchAssignments" resultType="org.example.teacherservice.vo.assignment.AssignmentSearchResult">
+        SELECT
+        a.assignment_id as assignmentId,
+        a.title,
+        u.real_name as creatorName,
+        CASE
+        WHEN MIN(ac.deadline) &gt; NOW() THEN 1
+        WHEN MAX(ac.deadline) &lt; NOW() THEN 3
+        ELSE 2
+        END as status,
+        MIN(ac.deadline) as deadline
+        FROM assignments a
+        JOIN users u ON a.creator_id = u.user_id
+        LEFT JOIN assignment_classes ac ON a.assignment_id = ac.assignment_id
+        WHERE 1=1
+        <if test="titleKeyword != null and titleKeyword != ''">
+            AND a.title LIKE CONCAT('%', #{titleKeyword}, '%')
+        </if>
+        <if test="creatorId != null">
+            AND a.creator_id = #{creatorId}
+        </if>
+        <if test="status != null">
+            AND (
+            (#{status} = 1 AND MIN(ac.deadline) > NOW()) OR
+            (#{status} = 2 AND MIN(ac.deadline) &lt;= NOW() AND MAX(ac.deadline) >= NOW()) OR
+            (#{status} = 3 AND MAX(ac.deadline) &lt; NOW())
+            )
+        </if>
+        GROUP BY a.assignment_id, a.title, u.real_name
+        ORDER BY a.create_time DESC
+    </select>
+</mapper>

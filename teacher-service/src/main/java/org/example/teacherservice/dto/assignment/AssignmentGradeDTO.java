@@ -20,7 +20,6 @@ public class AssignmentGradeDTO {
     private Integer graderId;
 
     @DecimalMin(value = "0.00", message = "分数不能为负数")
-    @DecimalMax(value = "100.00", message = "分数不能超过100")
     private BigDecimal score;
 
     @Size(max = 500, message = "评语长度不能超过500字符")

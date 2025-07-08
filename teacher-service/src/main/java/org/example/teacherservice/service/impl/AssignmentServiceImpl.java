@@ -1,11 +1,20 @@
 package org.example.teacherservice.service.impl;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 import org.example.teacherservice.dto.assignment.AssignmentCreateDTO;
 import org.example.teacherservice.dto.assignment.AssignmentUpdateDTO;
 import org.example.teacherservice.entity.Assignment;
+import org.example.teacherservice.entity.AssignmentClasses;
+import org.example.teacherservice.entity.Resources;
 import org.example.teacherservice.exception.BusinessException;
 import org.example.teacherservice.mapper.AssignmentClassesMapper;
 import org.example.teacherservice.mapper.AssignmentMapper;
+import org.example.teacherservice.mapper.ResourcesMapper;
 import org.example.teacherservice.response.PageParam;
 import org.example.teacherservice.response.PageResult;
 import org.example.teacherservice.service.AssignmentService;
@@ -19,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +40,8 @@ public class AssignmentServiceImpl implements AssignmentService {
     private AssignmentMapper assignmentMapper;
     @Autowired
     private AssignmentClassesMapper assignmentClassesMapper;
+    @Autowired
+    private ResourcesMapper resourcesMapper;
 
 
     @Override
@@ -41,13 +53,40 @@ public class AssignmentServiceImpl implements AssignmentService {
         if (creatorId == null || creatorId <= 0) {
             throw new BusinessException("创建人ID不合法");
         }
-
+        // 检查 resource_id 是否存在
+        if (dto.getResourceId() != null) {
+            Resources resource = resourcesMapper.selectById(dto.getResourceId());
+            if (resource == null) {
+                throw new RuntimeException("Resource not found with ID: " + dto.getResourceId());
+            }
+        }
         Assignment assignment = new Assignment();
+        assignment.setCreatorId(creatorId);
+        assignment.setCreateTime(new Date());
+        assignment.setTitle(dto.getTitle());
+        assignment.setResourceId(dto.getResourceId());
         BeanUtils.copyProperties(dto, assignment);
         assignment.setCreatorId(creatorId);
         assignment.setCreateTime(new Date());
 
         assignmentMapper.insert(assignment);
+
+        // 新增：处理关联班级
+        if (dto.getClassIds() != null && !dto.getClassIds().isEmpty()) {
+            for (Integer classId : dto.getClassIds()) {
+                AssignmentClasses assignmentClass = new AssignmentClasses();
+
+                assignmentClass.setClassId(classId);
+                assignmentClass.setAssignmentId(assignment.getAssignmentId());
+                assignmentClass.setClassDeadline(dto.getDeadline());
+                assignmentClass.setClassId(classId);
+                assignmentClass.setPublishTime(new Date());
+                assignmentClass.setPublishStatus(1);
+
+                assignmentClassesMapper.insert(assignmentClass);
+            }
+        }
+
         return assignment.getAssignmentId();
     }
 
@@ -70,7 +109,6 @@ public class AssignmentServiceImpl implements AssignmentService {
         assignment.setAssignmentId(dto.getAssignmentId());
         assignment.setTitle(StringUtils.hasText(dto.getTitle()) ? dto.getTitle() : existingAssignment.getTitle());
         assignment.setDescription(StringUtils.hasText(dto.getDescription()) ? dto.getDescription() : existingAssignment.getDescription());
-        assignment.setDeadline(dto.getDeadline() != null ? dto.getDeadline() : existingAssignment.getDeadline());
         assignment.setTotalScore(dto.getTotalScore() != null ? dto.getTotalScore() : existingAssignment.getTotalScore());
 
         assignmentMapper.updateById(assignment);
@@ -102,6 +140,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
         AssignmentBasicVO vo = new AssignmentBasicVO();
         BeanUtils.copyProperties(assignment, vo);
+        vo.setCreateTime(assignment.getCreateTime());
         return vo;
     }
 
@@ -175,6 +214,11 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public List<AssignmentSearchResult> searchAssignments(String titleKeyword, Integer creatorId, Integer status) {
+        // 参数验证（可选）
+        if (status != null && (status < 1 || status > 3)) {
+            throw new IllegalArgumentException("状态参数不合法，必须是1(未开始)、2(进行中)或3(已截止)");
+        }
+
         return assignmentMapper.searchAssignments(titleKeyword, creatorId, status);
     }
 }

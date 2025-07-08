@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public interface AssignmentClassesService {
     /**
-     * 批量建立作业-班级关联关系
+     * 批量建立作业-班级关联关系,也可以单个
      * @param assignmentId 作业ID
      * @param classIds 班级ID列表
      * @throws BusinessException 当班级不存在或关联已存在时抛出

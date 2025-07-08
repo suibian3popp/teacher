@@ -24,8 +24,8 @@ public class Assignment {
     @TableField("description")
     private String description;
 
-    @TableField("deadline")
-    private Date deadline;  // 全局截止时间（可选）
+//    @TableField("deadline")
+//    private Date deadline;  // 全局截止时间（可选）
 
     @TableField("total_score")
     private BigDecimal totalScore;
@@ -40,6 +40,6 @@ public class Assignment {
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;  // 发布时间
 
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    private Date updateTime;  // 更新时间
+//    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+//    private Date updateTime;  // 更新时间
 }

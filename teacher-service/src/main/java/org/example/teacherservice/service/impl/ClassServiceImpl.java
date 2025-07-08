@@ -3,25 +3,26 @@ package org.example.teacherservice.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.example.teacherservice.entity.StudentClass;
-import org.example.teacherservice.mapper.ClassMapper;
+import org.example.teacherservice.mapper.ClassesMapper;
 import org.example.teacherservice.mapper.StudentClassMapper;
 import org.example.teacherservice.service.ClassService;
-import org.example.teacherservice.entity.Class;
+import org.example.teacherservice.entity.Classes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
-public class ClassServiceImpl extends ServiceImpl<ClassMapper, Class> implements ClassService {
+public class ClassServiceImpl extends ServiceImpl<ClassesMapper, Classes> implements ClassService {
     @Autowired
     private StudentClassMapper studentClassMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer createClass(Class clazz) {
+    public Integer createClass(Classes clazz) {
         // 参数校验
         if (clazz == null) {
             throw new IllegalArgumentException("班级信息不能为空");
@@ -38,7 +39,7 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Class> implements
         if (!StringUtils.hasText(clazz.getDescription())) {
             clazz.setDescription(""); // 确保描述不为null
         }
-
+        clazz.setCreatedAt(new Date());
         // 保存班级信息
         if (!this.save(clazz)) {
             throw new RuntimeException("创建班级失败");
@@ -48,20 +49,20 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Class> implements
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateClass(Class clazz) {
+    public void updateClass(Classes clazz) {
         // 参数校验
         if (clazz == null || clazz.getClassId() == null) {
             throw new IllegalArgumentException("班级ID不能为空");
         }
 
         // 获取原始数据
-        Class existing = this.getById(clazz.getClassId());
+        Classes existing = this.getById(clazz.getClassId());
         if (existing == null) {
             throw new RuntimeException("班级不存在");
         }
 
         // 合并更新数据（保留原有非空字段）
-        Class merged = mergeClassFields(existing, clazz);
+        Classes merged = mergeClassFields(existing, clazz);
 
         // 执行更新
         if (!this.updateById(merged)) {
@@ -69,8 +70,8 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Class> implements
         }
     }
 
-    private Class mergeClassFields(Class existing, Class update) {
-        Class merged = new Class();
+    private Classes mergeClassFields(Classes existing, Classes update) {
+        Classes merged = new Classes();
         merged.setClassId(existing.getClassId());
 
         // 必填字段
@@ -112,13 +113,13 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Class> implements
     }
 
     @Override
-    public Class getClassById(Integer classId) {
+    public Classes getClassById(Integer classId) {
         // 参数校验
         if (classId == null) {
             throw new IllegalArgumentException("班级ID不能为空");
         }
 
-        Class clazz = this.getById(classId);
+        Classes clazz = this.getById(classId);
         if (clazz == null) {
             throw new RuntimeException("班级不存在");
         }
@@ -126,14 +127,14 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Class> implements
     }
 
     @Override
-    public List<Class> getClassesByCourse(Integer courseId) {
+    public List<Classes> getClassesByCourse(Integer courseId) {
         // 参数校验
         if (courseId == null) {
             throw new IllegalArgumentException("课程ID不能为空");
         }
 
-        LambdaQueryWrapper<Class> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Class::getCourseId, courseId);
+        LambdaQueryWrapper<Classes> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Classes::getCourseId, courseId);
         return this.list(wrapper);
     }
 
@@ -155,19 +156,19 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Class> implements
     }
 
     @Override
-    public List<Class> searchClasses(Integer courseId, String keyword) {
+    public List<Classes> searchClasses(Integer courseId, String keyword) {
         // 参数校验
         if (courseId == null) {
             throw new IllegalArgumentException("课程ID不能为空");
         }
 
-        LambdaQueryWrapper<Class> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Class::getCourseId, courseId);
+        LambdaQueryWrapper<Classes> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Classes::getCourseId, courseId);
 
         if (StringUtils.hasText(keyword)) {
-            wrapper.and(qw -> qw.like(Class::getName, keyword)
+            wrapper.and(qw -> qw.like(Classes::getName, keyword)
                     .or()
-                    .like(Class::getDescription, keyword));
+                    .like(Classes::getDescription, keyword));
         }
 
         return this.list(wrapper);
@@ -180,8 +181,8 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Class> implements
             throw new IllegalArgumentException("课程ID不能为空");
         }
 
-        LambdaQueryWrapper<Class> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Class::getCourseId, courseId);
+        LambdaQueryWrapper<Classes> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Classes::getCourseId, courseId);
         long count = count(wrapper);
         return (int) count; // 显式转换为int
     }
@@ -196,5 +197,16 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Class> implements
             return false;
         }
         return this.getById(classId) != null;
+    }
+
+    @Override
+    public boolean updateCountById(Integer classId, Integer count) {
+        Classes existing = this.getById(classId);
+        if (existing == null) {
+            throw new IllegalArgumentException("班级不存在");
+        }
+        Integer newCount = existing.getStudentCount()+count;
+        existing.setStudentCount(newCount);
+        return this.updateById(existing);
     }
 }

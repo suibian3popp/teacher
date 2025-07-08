@@ -27,6 +27,26 @@ public class CommonResponse<T> implements Serializable {
         );
     }
 
+    public static <T> CommonResponse<T> success(T data, String message) {
+        return new CommonResponse<>(
+                ResponseCode.SUCCESS.getCode(),
+                message,
+                data
+        );
+    }
+
+    public static <T> CommonResponse<T> created(T data, String message) {
+        return new CommonResponse<>(
+                ResponseCode.CREATED.getCode(),
+                message,
+                data
+        );
+    }
+
+    public static <T> CommonResponse<T> success() {
+        return success(null);
+    }
+
     // 失败响应
     public static <T> CommonResponse<T> error(ResponseCode code) {
         return new CommonResponse<>(
