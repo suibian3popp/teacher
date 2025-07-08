@@ -29,6 +29,5 @@ public class AssignmentCreateDTO {
     @NotNull(message = "关联资源ID不能为空")
     private Integer resourceId;
 
-    @NotEmpty(message = "至少关联一个班级")
     private List<Integer> classIds; // 关联的班级ID列表
 }

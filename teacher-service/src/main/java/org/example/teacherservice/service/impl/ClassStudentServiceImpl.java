@@ -3,7 +3,9 @@ package org.example.teacherservice.service.impl;
 
 import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.example.teacherservice.entity.Classes;
 import org.example.teacherservice.entity.StudentClass;
+import org.example.teacherservice.mapper.ClassesMapper;
 import org.example.teacherservice.mapper.StudentClassMapper;
 import org.example.teacherservice.service.ClassService;
 import org.example.teacherservice.service.ClassStudentService;
@@ -22,6 +24,11 @@ public class ClassStudentServiceImpl implements ClassStudentService {
     private StudentService studentService;
     @Autowired
     private ClassService classService;
+    @Autowired
+    private ClassesMapper classesMapper;
+
+
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -71,7 +78,7 @@ public class ClassStudentServiceImpl implements ClassStudentService {
                 continue;
             }
         }
-
+        classService.updateCountById(classId,successCount);
         return successCount;
     }
 
@@ -90,7 +97,8 @@ public class ClassStudentServiceImpl implements ClassStudentService {
         LambdaQueryWrapper<StudentClass> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(StudentClass::getClassId, classId)
                 .eq(StudentClass::getStudentId, studentId);
-
+        //更新班级人数
+        classService.updateCountById(classId,-1);
         if (studentClassMapper.delete(wrapper) <= 0) {
             throw new RuntimeException("删除学生班级关联失败");
         }
@@ -117,6 +125,9 @@ public class ClassStudentServiceImpl implements ClassStudentService {
                 .in(StudentClass::getStudentId, studentIds);
 
         int deletedCount = studentClassMapper.delete(wrapper);
+        //更新班级人数
+        classService.updateCountById(classId,deletedCount);
+
         if (deletedCount <= 0) {
             throw new RuntimeException("批量删除学生班级关联失败");
         }

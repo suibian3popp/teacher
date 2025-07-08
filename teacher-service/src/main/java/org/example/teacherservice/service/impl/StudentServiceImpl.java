@@ -2,10 +2,13 @@ package org.example.teacherservice.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.example.teacherservice.entity.Classes;
 import org.example.teacherservice.entity.Student;
 import org.example.teacherservice.entity.StudentClass;
+import org.example.teacherservice.mapper.ClassesMapper;
 import org.example.teacherservice.mapper.StudentClassMapper;
 import org.example.teacherservice.mapper.StudentMapper;
+import org.example.teacherservice.service.ClassService;
 import org.example.teacherservice.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,8 @@ import java.util.List;
 public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> implements StudentService {
     @Autowired
     private StudentClassMapper studentClassMapper;
+    @Autowired
+    private ClassService classService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -162,7 +167,9 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         if (studentClassMapper.exists(wrapper)) {
             throw new RuntimeException("该学生已选本课程的其它班级");
         }
-
+        //更新班级人数
+        boolean a= classService.updateCountById(studentClass.getClassId(),1);
+        System.out.println("更新人数成功了吗？："+a);
         // 插入选课记录
         if (studentClassMapper.insert(studentClass) <= 0) {
             throw new RuntimeException("选课失败");

@@ -18,16 +18,12 @@ public class AssignmentUpdateDTO {
     @NotNull(message = "作业ID不能为空")
     private Integer assignmentId;
 
-    @NotBlank(message = "作业标题不能为空")
     private String title;
 
     private String description;
 
-    @NotNull(message = "截止时间不能为空")
-    @Future(message = "截止时间必须是将来的时间")
-    private Date deadline;
+    private Integer resourceId;
 
-    @NotNull(message = "总分不能为空")
     @DecimalMin(value = "0.01", message = "总分必须大于0")
     private BigDecimal totalScore;
 }

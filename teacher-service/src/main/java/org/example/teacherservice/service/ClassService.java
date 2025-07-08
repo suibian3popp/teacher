@@ -68,6 +68,13 @@ public interface ClassService {
      */
     boolean existsById(Integer classId);
 
+    /**
+     * 修改班级人数
+     * @param classId
+     * @param count
+     * @return
+     */
+    boolean updateCountById(Integer classId, Integer count);
 }
 
 

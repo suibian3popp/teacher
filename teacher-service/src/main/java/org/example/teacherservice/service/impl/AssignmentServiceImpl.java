@@ -140,6 +140,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
         AssignmentBasicVO vo = new AssignmentBasicVO();
         BeanUtils.copyProperties(assignment, vo);
+        vo.setCreateTime(assignment.getCreateTime());
         return vo;
     }
 

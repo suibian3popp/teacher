@@ -33,9 +33,15 @@ public class AssignmentController {
     @PostMapping
     public ResponseEntity<Integer> createAssignment(@RequestBody AssignmentCreateDTO dto) {
         System.out.println("进入创建作业");
-        System.out.println("作业标题"+dto.getTitle());
+
         JwtUserInfo currentUser = UserContext.get();
-        System.out.println("用户名字"+currentUser.getUsername());
+        System.out.println("教师名字"+currentUser.getUsername());
+        System.out.println("作业标题"+dto.getTitle());
+        System.out.println("截止时间"+dto.getDeadline());
+        System.out.println("作业描述"+dto.getDescription());
+        System.out.println("资源描述"+dto.getResourceId());
+        System.out.println("关联班级"+dto.getClassIds());
+        System.out.println("总分"+dto.getTotalScore());
         Integer assignmentId = assignmentService.createAssignment(dto, currentUser.getUserId());
         return ResponseEntity.ok(assignmentId);
     }

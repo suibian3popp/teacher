@@ -87,13 +87,20 @@ public class StudentController {
      */
     @PostMapping("/course")
     public ResponseEntity<Void> selectCourse(@RequestBody StudentClass studentClass) {
-        System.out.println("学生选课");
+        try{
+            System.out.println("学生选课");
+
         System.out.println("学生选课关系");
         System.out.println("学生选择课程ID："+studentClass.getCourseId());
         System.out.println("学生ID:"+studentClass.getStudentId());
         System.out.println("学生选课的班级"+studentClass.getClassId());
         studentService.selectCourse(studentClass);
+        System.out.println("成功了吗？");
         return ResponseEntity.ok().build();
+        }catch (Exception e) {
+            System.out.println("发生异常，事务回滚: " + e.getMessage());
+            throw e; // 重新抛出异常，确保事务回滚
+        }
     }
 
     /**
@@ -122,15 +129,14 @@ public class StudentController {
 
     /**
      * 根据院系搜索学生
-     * GET /service/student/department/{departmentId}?keyword=张
+     * GET /service/student/department/{departmentId}
      */
     @GetMapping("/department/{departmentId}")
     public ResponseEntity<List<Student>> searchStudentsByDepartment(
-            @PathVariable Integer departmentId,
-            @RequestParam(required = false) String keyword) {
+            @PathVariable Integer departmentId) {
         System.out.println("查看院系学生有哪些");
         System.out.println("院系ID:"+departmentId);
-        List<Student> students = studentService.searchStudentsByDepartment(departmentId, keyword);
+        List<Student> students = studentService.searchStudentsByDepartment(departmentId, null);
         return ResponseEntity.ok(students);
     }
 

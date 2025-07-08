@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -38,7 +39,7 @@ public class ClassServiceImpl extends ServiceImpl<ClassesMapper, Classes> implem
         if (!StringUtils.hasText(clazz.getDescription())) {
             clazz.setDescription(""); // 确保描述不为null
         }
-
+        clazz.setCreatedAt(new Date());
         // 保存班级信息
         if (!this.save(clazz)) {
             throw new RuntimeException("创建班级失败");
@@ -196,5 +197,16 @@ public class ClassServiceImpl extends ServiceImpl<ClassesMapper, Classes> implem
             return false;
         }
         return this.getById(classId) != null;
+    }
+
+    @Override
+    public boolean updateCountById(Integer classId, Integer count) {
+        Classes existing = this.getById(classId);
+        if (existing == null) {
+            throw new IllegalArgumentException("班级不存在");
+        }
+        Integer newCount = existing.getStudentCount()+count;
+        existing.setStudentCount(newCount);
+        return this.updateById(existing);
     }
 }
