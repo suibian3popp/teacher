@@ -36,7 +36,7 @@ public interface AssignmentClassesMapper extends BaseMapper<AssignmentClasses> {
     int deleteByAssignmentAndClass(@Param("assignmentId") Integer assignmentId,
                                    @Param("classId") Integer classId);
 
-    @Select("SELECT c.class_id, c.class_name FROM classes c " +
+    @Select("SELECT c.class_id, c.name FROM classes c " +
             "JOIN assignment_classes ac ON c.class_id = ac.class_id " +
             "WHERE ac.assignment_id = #{assignmentId}")
     List<ClassSimpleVO> selectClassesByAssignmentId(@Param("assignmentId") Integer assignmentId);
@@ -50,4 +50,8 @@ public interface AssignmentClassesMapper extends BaseMapper<AssignmentClasses> {
             "</foreach>" +
             "</script>")
     List<Map<String, Object>> selectClassNamesByAssignmentIds(@Param("assignmentIds") List<Integer> assignmentIds);
+
+    @Select("SELECT id FROM assignment_classes WHERE assignment_id = #{assignmentId} AND class_id = #{classId}")
+    Integer selectIdByAssignmentAndClass(@Param("assignmentId") Integer assignmentId,
+                                         @Param("classId") Integer classId);
 }

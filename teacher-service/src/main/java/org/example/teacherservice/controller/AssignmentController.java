@@ -13,6 +13,7 @@ import org.example.teacherservice.vo.assignment.AssignmentBasicVO;
 import org.example.teacherservice.vo.assignment.AssignmentResourceVO;
 import org.example.teacherservice.vo.assignment.AssignmentSearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -102,12 +103,26 @@ public class AssignmentController {
     @GetMapping("/creator")
     public ResponseEntity<PageResult<AssignmentVO>> searchByCreator(
             PageParam pageParam) {
-        System.out.println("搜索当前用户发布的作业，分页搜索");
-        JwtUserInfo currentUser = UserContext.get();
-        System.out.println("获取当前发布人ID"+currentUser.getUserId());
-        PageResult<AssignmentVO> result = assignmentService.searchByCreator(
-                currentUser.getUserId(), pageParam);
-        return ResponseEntity.ok(result);
+        System.out.println("进入根据发布者ID分页查询作业");
+        try {
+            System.out.println("搜索当前用户发布的作业，分页搜索");
+            JwtUserInfo currentUser = UserContext.get();
+            System.out.println("发布者ID"+currentUser.getUserId());
+            if (currentUser == null) {
+                System.out.println("未获取到当前用户信息");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            System.out.println("获取当前发布人ID: " + currentUser.getUserId());
+            PageResult<AssignmentVO> result = assignmentService.searchByCreator(
+                    currentUser.getUserId(), pageParam);
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            System.out.println("查询用户发布的作业时发生异常: " + e.getMessage());
+            e.printStackTrace(); // 打印异常堆栈信息
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -134,6 +149,7 @@ public class AssignmentController {
             @RequestParam(required = false) Integer status) {
         System.out.println("综合搜索作业");
         System.out.println("标题关键字"+titleKeyword);
+        if(titleKeyword == null){}
         System.out.println("创建者ID"+creatorId);
         System.out.println("作业状态"+status);
         List<AssignmentSearchResult> result = assignmentService.searchAssignments(

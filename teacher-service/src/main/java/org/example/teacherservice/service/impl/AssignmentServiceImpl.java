@@ -1,24 +1,20 @@
 package org.example.teacherservice.service.impl;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import jakarta.validation.constraints.*;
-import lombok.Data;
 import org.example.teacherservice.dto.assignment.AssignmentCreateDTO;
 import org.example.teacherservice.dto.assignment.AssignmentUpdateDTO;
 import org.example.teacherservice.entity.Assignment;
 import org.example.teacherservice.entity.AssignmentClasses;
 import org.example.teacherservice.entity.Resources;
 import org.example.teacherservice.exception.BusinessException;
-import org.example.teacherservice.mapper.AssignmentClassesMapper;
-import org.example.teacherservice.mapper.AssignmentMapper;
-import org.example.teacherservice.mapper.ResourcesMapper;
+import org.example.teacherservice.mapper.*;
 import org.example.teacherservice.response.PageParam;
 import org.example.teacherservice.response.PageResult;
+import org.example.teacherservice.service.AssignmentClassesService;
 import org.example.teacherservice.service.AssignmentService;
+import org.example.teacherservice.service.AssignmentSubmissionService;
 import org.example.teacherservice.vo.AssignmentVO;
+import org.example.teacherservice.vo.ClassSimpleVO;
+import org.example.teacherservice.vo.ClassStatisticsVO;
 import org.example.teacherservice.vo.assignment.AssignmentBasicVO;
 import org.example.teacherservice.vo.assignment.AssignmentResourceVO;
 import org.example.teacherservice.vo.assignment.AssignmentSearchResult;
@@ -29,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +39,14 @@ public class AssignmentServiceImpl implements AssignmentService {
     private AssignmentClassesMapper assignmentClassesMapper;
     @Autowired
     private ResourcesMapper resourcesMapper;
+    @Autowired
+    private AssignmentClassesService assignmentClassesService;
+    @Autowired
+    private AssignmentSubmissionService assignmentSubmissionService;
+    @Autowired
+    private AssignmentSubmissionMapper assignmentSubmissionMapper;
+    @Autowired
+    private AssignmentGradeMapper assignmentGradeMapper;
 
 
     @Override
@@ -175,6 +180,30 @@ public class AssignmentServiceImpl implements AssignmentService {
                 offset,
                 pageParam.getPageSize()
         );
+        for(Assignment assignment : assignments) {
+            List<ClassSimpleVO> classes = assignmentClassesService.getClassesByAssignment(assignment.getAssignmentId());
+            List<ClassStatisticsVO> classStatistics=new ArrayList<>();
+            for (ClassSimpleVO classSimpleVO : classes) {
+                ClassStatisticsVO classStatisticsVO = new ClassStatisticsVO();
+                classStatisticsVO.setClassId(classSimpleVO.getClassId());
+                classStatisticsVO.setClassName(classSimpleVO.getClassName());
+
+                //当前作业的提交数量，assignmentSubmission。当前作业给了这个班级，然后这个班级的人提交作业上去，提交数量，找出作业班级关联列表，数数量。当前有作业ID，班级ID，那么要找作业班级关联ID
+                Integer assignmentClassId=assignmentClassesMapper.selectIdByAssignmentAndClass(assignment.getAssignmentId(), classSimpleVO.getClassId());
+                //提交者列表
+                List<Integer> submissionIds=assignmentSubmissionMapper.selectSubmissionIdsByAssignmentClassId(assignmentClassId);
+                classStatisticsVO.setSubmittedCount(submissionIds.size());
+                //当前作业的批改数量,assignmentGrade。当前作业给了这个班级，然后这个班级的人提交作业上去，然后根据上面的提交ID，然后找批改表。
+                List<Integer>gradeIds=new ArrayList<>();
+                for (Integer submissionId : submissionIds) {
+                    Integer gradeId=assignmentGradeMapper.selectGradeIdBySubmissionId(submissionId);
+                    gradeIds.add(gradeId);
+                }
+                classStatisticsVO.setGradedCount(gradeIds.size());
+                classStatistics.add(classStatisticsVO);
+            }
+        }
+
 
         // 转换为VO列表
         List<AssignmentVO> voList = assignments.stream()
@@ -218,7 +247,6 @@ public class AssignmentServiceImpl implements AssignmentService {
         if (status != null && (status < 1 || status > 3)) {
             throw new IllegalArgumentException("状态参数不合法，必须是1(未开始)、2(进行中)或3(已截止)");
         }
-
         return assignmentMapper.searchAssignments(titleKeyword, creatorId, status);
     }
 }

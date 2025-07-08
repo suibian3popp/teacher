@@ -14,5 +14,20 @@ import java.util.List;
 @Mapper
 @Repository
 public interface AssignmentGradeMapper extends BaseMapper<AssignmentGrade> {
+    /**
+     * 根据提交记录ID查询批改ID
+     * @param submissionId 提交记录ID
+     * @return 批改ID
+     */
+    @Select("SELECT grade_id FROM assignment_grades WHERE submission_id = #{submissionId}")
+    Integer selectGradeIdBySubmissionId(@Param("submissionId") Integer submissionId);
+
+    /**
+     * 根据提交记录ID查询完整的批改记录
+     * @param submissionId 提交记录ID
+     * @return 批改记录
+     */
+    @Select("SELECT * FROM assignment_grades WHERE submission_id = #{submissionId}")
+    AssignmentGrade selectBySubmissionId(@Param("submissionId") Integer submissionId);
     }
 

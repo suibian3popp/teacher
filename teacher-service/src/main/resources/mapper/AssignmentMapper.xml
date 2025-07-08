@@ -42,14 +42,14 @@
         <if test="creatorId != null">
             AND a.creator_id = #{creatorId}
         </if>
+        GROUP BY a.assignment_id, a.title, u.real_name, a.create_time  <!-- 添加 create_time -->
         <if test="status != null">
-            AND (
+            HAVING (
             (#{status} = 1 AND MIN(ac.deadline) > NOW()) OR
             (#{status} = 2 AND MIN(ac.deadline) &lt;= NOW() AND MAX(ac.deadline) >= NOW()) OR
             (#{status} = 3 AND MAX(ac.deadline) &lt; NOW())
             )
         </if>
-        GROUP BY a.assignment_id, a.title, u.real_name
         ORDER BY a.create_time DESC
     </select>
 </mapper>
