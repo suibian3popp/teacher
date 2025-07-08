@@ -38,7 +38,7 @@ public class AssignmentSubmissionController {
 
     /**
      * 获取学生单次作业提交记录
-     * GET /service/assignmentSubmission/student/submission?assignmentId={}&studentId={}
+     * GET /service/assignmentSubmission/student/submission?assignmentClassId={}&studentId={}
      */
     @GetMapping("/student/submission")
     public ResponseEntity<SubmissionVO> getStudentSubmission(
@@ -80,7 +80,7 @@ public class AssignmentSubmissionController {
 
     /**
      * 检查学生是否已提交作业
-     * GET /service/assignmentSubmission/check?assignmentId={}&studentId={}
+     * GET /service/assignmentSubmission/check?assignmentClassId={}&studentId={}
      */
     @GetMapping("/check")
     public ResponseEntity<Boolean> hasStudentSubmitted(

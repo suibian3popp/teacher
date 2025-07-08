@@ -3,10 +3,8 @@ package org.example.teacherservice.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.example.teacherservice.dto.assignment.AssignmentSubmitDTO;
-import org.example.teacherservice.entity.AssignmentClasses;
-import org.example.teacherservice.entity.AssignmentSubmission;
-import org.example.teacherservice.mapper.AssignmentClassesMapper;
-import org.example.teacherservice.mapper.AssignmentSubmissionMapper;
+import org.example.teacherservice.entity.*;
+import org.example.teacherservice.mapper.*;
 import org.example.teacherservice.service.AssignmentClassesService;
 import org.example.teacherservice.service.AssignmentSubmissionService;
 import org.example.teacherservice.service.StudentService;
@@ -17,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.example.teacherservice.exception.BusinessException;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,7 +28,13 @@ public class AssignmentSubmissionImpl implements AssignmentSubmissionService {
     @Autowired
     private AssignmentClassesMapper assignmentClassesMapper;
     @Autowired
+    private AssignmentGradeMapper assignmentGradeMapper;
+    @Autowired
     private StudentService studentService;
+    @Autowired
+    private StudentMapper studentMapper;
+    @Autowired
+    private AssignmentMapper assignmentMapper;
     @Override
     @Transactional
     public void submitAssignment(AssignmentSubmitDTO dto) {
@@ -78,27 +79,72 @@ public class AssignmentSubmissionImpl implements AssignmentSubmissionService {
         queryWrapper.eq(AssignmentSubmission::getAssignmentClassId, assignmentClassId)
                 .eq(AssignmentSubmission::getStudentId, studentId);
 
+
         AssignmentSubmission submission = submissionMapper.selectOne(queryWrapper);
+
+        AssignmentClasses assignmentClasses=assignmentClassesMapper.selectById(assignmentClassId);
+        Assignment assignment=assignmentMapper.selectById(assignmentClasses.getAssignmentId());
+        AssignmentGrade assignmentGrade=assignmentGradeMapper.selectBySubmissionId(submission.getSubmissionId());
+        Student student=studentMapper.selectById(studentId);
         if (submission == null) {
             return null;
         }
 
         SubmissionVO vo = new SubmissionVO();
+        if (assignmentGrade != null) {
+            vo.setIsGraded(true);
+        }
         BeanUtils.copyProperties(submission, vo);
+        BeanUtils.copyProperties(assignmentGrade, vo);
+        BeanUtils.copyProperties(assignment, vo);
+        vo.setAssignmentTitle(assignment.getTitle());
+        vo.setStudentName(student.getRealName());
+        BeanUtils.copyProperties(student, vo);
         // 这里可以补充其他需要设置的信息，如作业详情、批改状态等
         return vo;
     }
 
     @Override
     public List<SubmissionVO> listStudentSubmissions(Integer studentId) {
+        // 1. 查询学生的所有提交记录
         LambdaQueryWrapper<AssignmentSubmission> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(AssignmentSubmission::getStudentId, studentId)
                 .orderByDesc(AssignmentSubmission::getSubmitTime);
 
-        return submissionMapper.selectList(queryWrapper).stream()
+        List<AssignmentSubmission> submissions = submissionMapper.selectList(queryWrapper);
+        if (submissions == null || submissions.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 2. 遍历 submissions，查询关联数据并构建 VO
+        return submissions.stream()
                 .map(submission -> {
                     SubmissionVO vo = new SubmissionVO();
                     BeanUtils.copyProperties(submission, vo);
+
+                    // 查询关联的 assignment_class 和 assignment
+                    AssignmentClasses assignmentClass = assignmentClassesMapper.selectById(submission.getAssignmentClassId());
+                    if (assignmentClass != null) {
+                        Assignment assignment = assignmentMapper.selectById(assignmentClass.getAssignmentId());
+                        if (assignment != null) {
+                            vo.setAssignmentId(assignment.getAssignmentId());
+                            vo.setAssignmentTitle(assignment.getTitle());
+                        }
+                    }
+
+                    // 查询成绩
+                    AssignmentGrade grade = assignmentGradeMapper.selectBySubmissionId(submission.getSubmissionId());
+                    if (grade != null) {
+                        vo.setIsGraded(true);
+                        BeanUtils.copyProperties(grade, vo); // 设置成绩信息
+                    }
+
+                    // 查询学生信息
+                    Student student = studentMapper.selectById(studentId);
+                    if (student != null) {
+                        vo.setStudentName(student.getRealName());
+                    }
+
                     return vo;
                 })
                 .collect(Collectors.toList());
@@ -153,11 +199,8 @@ public class AssignmentSubmissionImpl implements AssignmentSubmissionService {
                 .orderByDesc(AssignmentSubmission::getSubmitTime);
 
         return submissionMapper.selectList(queryWrapper).stream()
-                .map(submission -> {
-                    SubmissionVO vo = new SubmissionVO();
-                    BeanUtils.copyProperties(submission, vo);
-                    return vo;
-                })
+                .map(submission -> getStudentSubmission(assignmentClassId, submission.getStudentId()))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 }

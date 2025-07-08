@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class AssignmentSubmitDTO {
-    @NotNull(message = "作业ID不能为空")
+    @NotNull(message = "作业班级关联ID不能为空")
     private Integer assignmentClassId;
 
     @NotNull(message = "学生ID不能为空")
