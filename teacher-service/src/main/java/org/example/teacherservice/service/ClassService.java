@@ -1,7 +1,7 @@
 package org.example.teacherservice.service;
 
 import org.example.teacherservice.entity.StudentClass;
-import org.example.teacherservice.entity.Class;
+import org.example.teacherservice.entity.Classes;
 
 import java.util.List;
 
@@ -11,13 +11,13 @@ public interface ClassService {
      * @param clazz 班级实体
      * @return 创建的班级ID
      */
-    Integer createClass(Class clazz);
+    Integer createClass(Classes clazz);
 
     /**
      * 更新班级信息
      * @param clazz 班级实体
      */
-    void updateClass(Class clazz);
+    void updateClass(Classes clazz);
 
     /**
      * 删除班级
@@ -30,14 +30,14 @@ public interface ClassService {
      * @param classId 班级ID
      * @return 班级实体
      */
-    Class getClassById(Integer classId);
+    Classes getClassById(Integer classId);
 
     /**
      * 获取课程下的所有班级
      * @param courseId 课程ID
      * @return 班级列表
      */
-    List<Class> getClassesByCourse(Integer courseId);
+    List<Classes> getClassesByCourse(Integer courseId);
 
     /**
      * 获取班级学生列表
@@ -52,7 +52,7 @@ public interface ClassService {
      * @param keyword 搜索关键词(可匹配班级名称或描述)
      * @return 匹配的班级列表
      */
-    List<Class> searchClasses(Integer courseId, String keyword);
+    List<Classes> searchClasses(Integer courseId, String keyword);
 
     /**
      * 获取课程下的班级数量

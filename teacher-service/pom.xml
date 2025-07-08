@@ -126,6 +126,29 @@
             <version>4.1.1</version> <!-- 专为Spring Cloud 2023.x设计 -->
         </dependency>
 
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version> <!-- 使用最新版本 -->
+        </dependency>
+
+<!--        &lt;!&ndash; 腾讯云TRTC签名生成库 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.tencentcloudapi</groupId>-->
+<!--            <artifactId>tencentcloud-sdk-java</artifactId>-->
+<!--            <version>3.1.500</version> &lt;!&ndash; 使用最新版本 &ndash;&gt;-->
+<!--        </dependency>-->
+
+
+        <dependency>
+            <groupId>com.github.tencentyun</groupId>
+            <artifactId>tls-sig-api-v2</artifactId>
+            <version>2.0</version>
+        </dependency>
+
+
+
+
     </dependencies>
 
     <build>

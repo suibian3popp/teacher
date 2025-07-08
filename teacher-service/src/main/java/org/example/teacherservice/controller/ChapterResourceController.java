@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/chapter-resource")
+@RequestMapping("/service/chapter-resource")
 public class ChapterResourceController {
     @Resource
     private ChapterResourcesService chapterResourcesService;

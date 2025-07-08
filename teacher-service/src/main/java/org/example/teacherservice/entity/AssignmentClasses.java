@@ -23,7 +23,7 @@ public class AssignmentClasses {
     private Integer classId;
 
     // 新增字段
-    @TableField("class_deadline")
+    @TableField("deadline")
     private Date classDeadline;  // 班级专属截止时间
 
     @TableField("publish_status")

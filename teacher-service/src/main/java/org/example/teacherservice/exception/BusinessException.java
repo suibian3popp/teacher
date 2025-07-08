@@ -17,6 +17,10 @@ public class BusinessException extends RuntimeException {
     public BusinessException(ResponseCode code) {
         this(code.getCode(), code.getDescription());
     }
+    // 新增构造方法：允许覆盖默认消息
+    public BusinessException(ResponseCode code, String message) {
+        this(code.getCode(), message);
+    }
 
     // 构造方法3：仅传入消息（使用默认业务错误码）
     public BusinessException(String message) {
