@@ -61,8 +61,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(Integer userId) {
-        User user = userMapper.selectById(userId);
+    public User getUserById(String userId) {
+        User user = userMapper.selectById(Integer.valueOf(userId));
         System.out.println("通过用户ID找User用户===========================");
         System.out.println(user.getDepartmentId());
         System.out.println(user.getUserId());
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(User user) {
-        User newUser = getUserById(user.getUserId());
+        User newUser = getUserById(String.valueOf(user.getUserId()));
         if(newUser == null) {
             return null;
         }
@@ -116,13 +116,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean deleteUser(Integer userId) {
+    public void deleteUser(Integer userId) {
         // 先删除登录认证信息（因为有外键约束）
         loginAuthMapper.delete(Wrappers.<LoginAuth>lambdaQuery()
                 .eq(LoginAuth::getUserId, userId));
 
         // 再删除用户信息
-        return userMapper.deleteById(userId) > 0;
+        userMapper.deleteById(userId);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean resetPassword(Integer userId, String newPassword) {
+    public void resetPassword(Integer userId, String newPassword) {
         // 参数校验
         if (userId == null || newPassword == null || newPassword.trim().isEmpty()) {
             throw new IllegalArgumentException("参数不能为空");
@@ -185,17 +185,17 @@ public class UserServiceImpl implements UserService {
         if (loginAuthMapper.selectCount(
                 Wrappers.<LoginAuth>lambdaQuery()
                         .eq(LoginAuth::getUserId, userId)) == 0) {
-            return false;
+            throw new IllegalArgumentException("用户不存在");
         }
 
         // 执行更新
-        return loginAuthMapper.update(loginAuth,
+        loginAuthMapper.update(loginAuth,
                 Wrappers.<LoginAuth>lambdaUpdate()
-                        .eq(LoginAuth::getUserId, userId)) > 0;
+                        .eq(LoginAuth::getUserId, userId));
     }
 
     @Override
-    public void updateLastLoginTime(Integer userId) {
+    public void updateLastLoginTime(String userId) {
         // 1. 构造更新对象
         LoginAuth loginAuth = new LoginAuth();
         // 将LocalDateTime转换为Date
@@ -205,17 +205,17 @@ public class UserServiceImpl implements UserService {
         // 2. 使用MyBatis-Plus的UpdateWrapper进行更新
         loginAuthMapper.update(loginAuth,
                 new LambdaUpdateWrapper<LoginAuth>()
-                        .eq(LoginAuth::getUserId, userId)
+                        .eq(LoginAuth::getUserId, Integer.valueOf(userId))
         );
 
     }
 
     @Override
-    public boolean checkPassword(Integer userId, String rawPassword) {
+    public boolean checkPassword(String userId, String rawPassword) {
         // 1. 根据用户ID查询登录认证信息
         LoginAuth loginAuth = loginAuthMapper.selectOne(
                 Wrappers.<LoginAuth>lambdaQuery()
-                        .eq(LoginAuth::getUserId, userId)
+                        .eq(LoginAuth::getUserId, Integer.valueOf(userId))
         );
         System.out.println("------------数据库中信息-------------");
         System.out.println("数据库中明文密码"+loginAuth.getPassword());
@@ -250,5 +250,18 @@ public class UserServiceImpl implements UserService {
             isExist = true;
         }
         return isExist;
+    }
+
+
+
+    // 添加通过用户名验证密码的方法
+    @Override
+    public boolean checkPasswordByUsername(String username, String password) {
+        // 实现从数据库通过username验证密码
+        LoginAuth auth = loginAuthMapper.findByUsername(username);
+        if (auth == null) {
+            return false;
+        }
+        return passwordEncoder.matches(password, auth.getPasswordHash());
     }
 }

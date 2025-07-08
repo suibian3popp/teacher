@@ -13,9 +13,39 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequestDTO {
-    @NotNull(message = "用户账号不能为空")
-    private Integer userId;
-
-    @NotBlank(message = "密码不能为空")
+    private String userId;
+    private String username;
     private String password;
+    
+    // 获取有效的用户标识（优先使用userId）
+    public String getEffectiveId() {
+        return (userId != null && !userId.isEmpty()) ? userId : username;
+    }
+    
+    // userId 的 getter 和 setter
+    public String getUserId() {
+        return userId;
+    }
+    
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+    
+    // username 的 getter 和 setter
+    public String getUsername() {
+        return username;
+    }
+    
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    // password 的 getter 和 setter
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

@@ -35,9 +35,9 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
             "</if>" +
             "<if test='status != null'>" +
             "AND (CASE " +
-            "WHEN #{status} = 1 THEN a.deadline > NOW() " +
+            "WHEN #{status} = 1 THEN a.deadline &gt; NOW() " +  // &gt; 代替 >
             "WHEN #{status} = 2 THEN a.deadline = NOW() " +
-            "WHEN #{status} = 3 THEN a.deadline < NOW() " +
+            "WHEN #{status} = 3 THEN a.deadline &lt; NOW() " +  // &lt; 代替 <
             "END) " +
             "</if>" +
             "ORDER BY a.create_time DESC" +

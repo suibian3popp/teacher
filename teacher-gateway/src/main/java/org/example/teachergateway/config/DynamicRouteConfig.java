@@ -16,10 +16,7 @@ public class DynamicRouteConfig {
     @Autowired
     private NacosConfigManager nacosConfigManager;
 
-    @Bean
-    public NacosRouteDefinitionRepository nacosRouteDefinitionRepository() {
-        return new NacosRouteDefinitionRepository(nacosConfigManager);
-    }
+  
 
     @Bean
     public ApplicationListener<RefreshRoutesEvent> routesRefreshListener() {

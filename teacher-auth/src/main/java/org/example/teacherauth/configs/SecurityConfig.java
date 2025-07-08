@@ -19,12 +19,10 @@ public class SecurityConfig {
         System.out.println("------------配置服务------------");
         System.out.println("------------------------------------");
         http
-                .csrf(csrf -> csrf.disable())  // 如果是 API 服务，可以禁用 CSRF
+                .csrf(csrf -> csrf.disable())  // 禁用 CSRF 保护
+                .cors(cors -> cors.disable())  // 禁用 CORS 配置(使用自定义配置)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login").permitAll() // 放行注册和登录
-                        .requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll() // 完全放行auth路径下的所有请求
                         .anyRequest().authenticated() // 其他请求需要认证
                 );
         return http.build();

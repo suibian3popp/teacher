@@ -36,37 +36,55 @@ public class AuthController {
     }
 
     /**
-     * 用户登录接口
-     * @param request 登录请求体，包含用户名和密码
+     * 用户登录接口 - 同时支持用户名和用户ID登录
+     * @param request 登录请求体，包含用户ID或用户名，以及密码
      * @return 登录成功返回JWT令牌和用户信息，失败返回401未授权
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
         System.out.println("进入登录功能");
-        // 1. 根据用户名查找用户
-        User user = userService.getUserById(request.getUserId());
-
+        User user = null;
+        boolean passwordValid = false;
+        
+        // 获取有效的登录标识(userId或username)
+        String loginId = request.getEffectiveId();
+        
+        if (request.getUserId() != null && !request.getUserId().isEmpty()) {
+            // 优先通过用户ID登录
+            user = userService.getUserById(request.getUserId());
+            if (user != null) {
+                passwordValid = userService.checkPassword(request.getUserId(), request.getPassword());
+            }
+        } else if (request.getUsername() != null && !request.getUsername().isEmpty()) {
+            // 通过用户名登录
+            user = userService.getUserByUsername(request.getUsername());
+            if (user != null) {
+                passwordValid = userService.checkPasswordByUsername(request.getUsername(), request.getPassword());
+            }
+        }
+        
         // 用户不存在返回401
         if (user == null) {
             System.out.println("用户不存在");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        // 2. 验证密码是否正确
-        if (!userService.checkPassword(user.getUserId(), request.getPassword())) {
+        
+        // 密码不正确返回401
+        if (!passwordValid) {
             System.out.println("密码不正确");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
+        
         // 3. 更新用户最后登录时间
-        userService.updateLastLoginTime(user.getUserId());
-
+        userService.updateLastLoginTime(String.valueOf(user.getUserId()));
+        
         // 4. 生成JWT令牌
         String token = jwtTokenProvider.generateToken(
                 user.getUserId(),
                 user.getUsername(),
                 user.getUserType()
         );
-
+        
         // 5. 返回令牌和用户信息
         return ResponseEntity.ok(
                 new LoginResponseDTO(
@@ -119,7 +137,7 @@ public class AuthController {
      */
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable Integer userId) {
-        User user = userService.getUserById(userId);
+        User user = userService.getUserById(String.valueOf(userId));
         if (user == null) {
             return ResponseEntity.notFound().build(); // 返回404
         }
