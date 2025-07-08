@@ -11,10 +11,12 @@ import org.springframework.context.annotation.Import;
 @Import(org.example.teachercommon.config.JwtConfig.class) // 显式导入配置
 @ComponentScan(basePackages = {
         "org.example.teachercommon",  // 显式添加 common 模块的包
-        "org.example.teacherservice"
+        "org.example.teacherservice",
+        "org.example.teachercommon.utils",
+        "course" // 添加 course 包到扫描路径
 })
 @EnableDiscoveryClient // 关键注解
-@MapperScan(value = "org.example.teacherservice.mapper")
+@MapperScan({"org.example.teacherservice.mapper", "course.mapper"}) // 合并 Mapper 扫描
 public class TeacherServiceApplication {
 
     public static void main(String[] args) {

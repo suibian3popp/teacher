@@ -37,7 +37,12 @@ public enum ResponseCode {
     // 作业模块 6100-6199
     ASSIGNMENT_NOT_FOUND(6101, "作业不存在"),
     SUBMISSION_EXPIRED(6102, "超过提交截止时间"),
-    INVALID_GRADE(6103, "无效的评分值");
+    INVALID_GRADE(6103, "无效的评分值"),
+
+    // 课程/章节模块
+    COURSE_NOT_FOUND(6200, "课程不存在"),
+    CHAPTER_HAS_CHILDREN(6201, "章节下存在子章节，无法删除"),
+    PARAM_IS_INVALID(6202, "参数无效");
 
     private final int code;
     private final String description;

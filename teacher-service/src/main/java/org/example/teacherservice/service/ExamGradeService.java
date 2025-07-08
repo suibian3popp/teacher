@@ -34,7 +34,7 @@ public interface ExamGradeService {
      * @param classId 班级ID
      * @return 成绩分布信息
      */
-    GradeDistributionVO getClassGradeDistribution(Integer examId, Integer classId);
+//    GradeDistributionVO getClassGradeDistribution(Integer examId, Integer classId);
 
     /**
      * 获取学生的考试成绩

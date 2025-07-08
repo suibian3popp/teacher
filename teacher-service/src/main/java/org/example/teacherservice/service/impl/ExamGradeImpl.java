@@ -22,10 +22,10 @@ public class ExamGradeImpl implements ExamGradeService {
         return null;
     }
 
-    @Override
-    public GradeDistributionVO getClassGradeDistribution(Integer examId, Integer classId) {
-        return null;
-    }
+//    @Override
+//    public GradeDistributionVO getClassGradeDistribution(Integer examId, Integer classId) {
+//        return null;
+//    }
 
     @Override
     public ExamGrade getExamGrade(Integer submissionId) {
