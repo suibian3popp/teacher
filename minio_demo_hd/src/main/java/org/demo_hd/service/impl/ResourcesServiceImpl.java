@@ -39,7 +39,6 @@ public class ResourcesServiceImpl extends ServiceImpl<ResourcesMapper, Resources
         int delResource = resourcesMapper.deleteById(resourceId);
 
         if (null != resource) {
-            //删除MinIO服务器上的文件 (删除头像)
             minioClient.removeObject(RemoveObjectArgs.builder()
                     .bucket(resource.getBucket())
                     .object(resource.getObjectKey())
