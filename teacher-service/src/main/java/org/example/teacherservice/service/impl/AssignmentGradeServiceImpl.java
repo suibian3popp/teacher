@@ -39,6 +39,8 @@ public class AssignmentGradeServiceImpl implements AssignmentGradeService {
     private UsersMapper usersMapper;
     @Autowired
     private ClassesMapper classesMapper;
+    @Autowired
+    private StudentMapper studentMapper;
 
     @Override
     @Transactional
@@ -425,18 +427,13 @@ public class AssignmentGradeServiceImpl implements AssignmentGradeService {
                         .eq(AssignmentGrade::getSubmissionId, submission.getSubmissionId())
         );
 
-        // 3. 查询学生信息
-        Users student = usersMapper.selectOne(
-                Wrappers.<Users>lambdaQuery()
-                        .select(Users::getUserId, Users::getUsername)
-                        .eq(Users::getUserId, studentId)
-        );
 
+        Student student=studentMapper.selectById(studentId);
         // 4. 组装GradeDetailVO对象
         GradeDetailVO vo = new GradeDetailVO();
         vo.setSubmissionId(submission.getSubmissionId());
         vo.setStudentId(studentId);
-        vo.setStudentName(student != null ? student.getUsername() : "未知学生");
+        vo.setStudentName(student != null ? student.getRealName() : "未知学生");
 
         if (grade != null) {
             vo.setGradeId(grade.getSubmissionId());

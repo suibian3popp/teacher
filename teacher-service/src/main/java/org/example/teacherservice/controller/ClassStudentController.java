@@ -31,7 +31,12 @@ public class ClassStudentController {
         for (Integer studentId : studentIds) {
             System.out.println("studentId:"+studentId);
         }
-        int successCount = classStudentService.batchAddStudentsToClass(classId, studentIds, courseId);
+        int successCount=0;
+        try{
+            successCount = classStudentService.batchAddStudentsToClass(classId, studentIds, courseId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok(successCount);
     }
 

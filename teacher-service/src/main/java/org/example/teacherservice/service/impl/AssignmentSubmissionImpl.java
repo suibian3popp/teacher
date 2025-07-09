@@ -67,6 +67,7 @@ public class AssignmentSubmissionImpl implements AssignmentSubmissionService {
         submission.setAssignmentClassId(dto.getAssignmentClassId());
         submission.setStudentId(dto.getStudentId());
         submission.setResourceId(dto.getResourceId());
+        submission.setSubmitTime(new Date());
 
         if (submissionMapper.insert(submission) != 1) {
             throw new BusinessException("作业提交失败");

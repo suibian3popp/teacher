@@ -32,7 +32,9 @@ public class AssignmentGradeController {
         System.out.println(dto.getClass());
         JwtUserInfo currentUser = UserContext.get();
         dto.setGraderId(currentUser.getUserId());
-        System.out.println("批改人ID"+dto.getGraderId());
+        System.out.println("批改人ID："+dto.getGraderId());
+        System.out.println("评语："+dto.getFeedback());
+        System.out.println("学生的作业资源ID："+dto.getSubmissionId());
         System.out.println("评分："+dto.getScore());
         gradeService.gradeAssignment(dto);
         return ResponseEntity.ok().build();
@@ -57,8 +59,8 @@ public class AssignmentGradeController {
     @GetMapping("/stats")
     public ResponseEntity<GradeStatsVO> getAssignmentStats(
             @RequestParam Integer assignmentClassId) {
-        System.out.println("获取作业成绩统计概览");
-        System.out.println("当前作业ID"+assignmentClassId);
+        System.out.println("获取班级当前作业成绩统计概览");
+        System.out.println("当前班级作业关联ID"+assignmentClassId);
         GradeStatsVO stats = gradeService.getAssignmentStats(assignmentClassId);
         return ResponseEntity.ok(stats);
     }

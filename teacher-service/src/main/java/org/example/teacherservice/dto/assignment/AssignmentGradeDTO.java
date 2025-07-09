@@ -13,10 +13,9 @@ import java.math.BigDecimal;
  */
 @Data
 public class AssignmentGradeDTO {
-    @NotNull(message = "提交记录ID不能为空")
+    @NotNull(message = "提交记录ID不能为空,学生的作业资源ID")
     private Integer submissionId;
 
-    @NotNull(message = "批改人ID不能为空")
     private Integer graderId;
 
     @DecimalMin(value = "0.00", message = "分数不能为负数")
