@@ -84,7 +84,10 @@ public class AssignmentClassesController {
     public ResponseEntity<Map<Integer, List<String>>> getClassNamesByAssignments(
             @RequestBody List<Integer> assignmentIds) {
         System.out.println("批量获取作业关联的班级名称");
-        System.out.println("作业ID"+assignmentIds);
+        System.out.println("作业ID");
+        for (Integer assignmentId : assignmentIds) {
+            System.out.println("assignmentId"+assignmentId);
+        }
         Map<Integer, List<String>> result = assignmentClassesService.getClassNamesByAssignments(assignmentIds);
         return ResponseEntity.ok(result);
     }

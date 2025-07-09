@@ -1,5 +1,6 @@
 package org.example.teacherservice.service.impl;
 
+import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import org.example.teacherservice.mapper.AssignmentMapper;
 import org.example.teacherservice.mapper.AssignmentClassesMapper;
 import org.example.teacherservice.service.AssignmentClassesService;
@@ -94,24 +95,39 @@ public class AssignmentClassesServiceImpl implements AssignmentClassesService {
 
     @Override
     public Map<Integer, List<String>> getClassNamesByAssignments(List<Integer> assignmentIds) {
-        if (assignmentIds == null || assignmentIds.isEmpty()) {
+        if (CollectionUtils.isEmpty(assignmentIds)) {
             return Collections.emptyMap();
         }
 
-        // 查询所有相关的作业-班级名称映射
-        List<Map<String, Object>> results = assignmentClassesMapper
-                .selectClassNamesByAssignmentIds(assignmentIds);
+        try {
+            System.out.println("开始查询作业关联班级名称，作业ID列表: {}"+assignmentIds);
 
-        // 转换为Map<Integer, List<String>>结构
-        Map<Integer, List<String>> resultMap = new HashMap<>();
-        for (Map<String, Object> row : results) {
-            Integer assignmentId = (Integer) row.get("assignmentId");
-            String className = (String) row.get("className");
+            List<Map<String, Object>> results = assignmentClassesMapper
+                    .selectClassNamesByAssignmentIds(assignmentIds);
 
-            resultMap.computeIfAbsent(assignmentId, k -> new ArrayList<>())
-                    .add(className);
+            System.out.println("数据库查询结果: {}"+results);
+
+            Map<Integer, List<String>> resultMap = new HashMap<>();
+
+            for (Map<String, Object> row : results) {
+                try {
+                    Integer assignmentId = (Integer) row.get("assignmentId");
+                    String className = (String) row.get("className");
+
+                    if (assignmentId != null && className != null) {
+                        resultMap.computeIfAbsent(assignmentId, k -> new ArrayList<>())
+                                .add(className);
+                    }
+                } catch (Exception e) {
+                    System.out.println("处理单条记录时出错: {}"+row+e);
+                }
+            }
+
+            System.out.println("最终返回结果: {}"+resultMap);
+            return resultMap;
+        } catch (Exception e) {
+            System.out.println("批量获取班级名称时出错"+e);
+            return Collections.emptyMap();
         }
-
-        return resultMap;
     }
 }
