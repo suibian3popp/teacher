@@ -9,6 +9,7 @@ import org.example.teacherservice.vo.AssignmentDetailVO;
 import org.example.teacherservice.vo.AssignmentVO;
 import org.example.teacherservice.exception.BusinessException;
 import org.example.teacherservice.vo.assignment.AssignmentBasicVO;
+import org.example.teacherservice.entity.Classes;
 import org.example.teacherservice.vo.assignment.AssignmentResourceVO;
 import org.example.teacherservice.vo.assignment.AssignmentSearchResult;
 
@@ -80,4 +81,11 @@ public interface AssignmentService {
             @Param("titleKeyword") String titleKeyword,
             @Param("creatorId") Integer creatorId,
             @Param("status") Integer status);
+
+    /**
+     * 根据作业ID获取班级列表
+     * @param assignmentId 作业ID
+     * @return 班级列表
+     */
+    List<Classes> getClassesByAssignmentId(Integer assignmentId);
 }

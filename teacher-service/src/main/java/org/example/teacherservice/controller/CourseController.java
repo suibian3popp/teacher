@@ -10,26 +10,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/service")
+@RequestMapping("/service/courses")
 @RequiredArgsConstructor
 public class CourseController {
 
     private final CourseService courseService;
 
-    @PostMapping("/courses")
+    @PostMapping
     public CommonResponse<Course> createCourse(@RequestBody CourseCreateDTO courseCreateDTO) {
         Course newCourse = courseService.createCourse(courseCreateDTO);
         return CommonResponse.success(newCourse, "课程创建成功");
     }
 
-    @DeleteMapping("/courses/{courseId}")
+    @DeleteMapping("/{courseId}")
     public CommonResponse<Void> deleteCourse(@PathVariable Integer courseId) {
         courseService.deleteCourse(courseId);
         return CommonResponse.success(null, "课程删除成功");
     }
 
     // 1. 获取教师课程列表
-    @GetMapping("/courses/teacher/{teacherId}")
+    @GetMapping("/teacher/{teacherId}")
     public CommonResponse<List<CourseDTO>> getTeacherCourses(@PathVariable Integer teacherId) {
         System.out.println("进入获取教师课程列表"+"teacherId: " + teacherId);
         List<CourseDTO> courses = courseService.getCoursesByTeacherId(teacherId);
@@ -37,7 +37,7 @@ public class CourseController {
     }
 
     // 4. 获取课程详情（含章节结构）
-    @GetMapping("/courses/{courseId}/chapters")
+    @GetMapping("/{courseId}/chapters")
     public CommonResponse<List<ChapterDTO>> getCourseChapters(@PathVariable Integer courseId) {
         CourseDetailDTO courseDetail = courseService.getCourseDetailWithChapters(courseId);
         return CommonResponse.success(courseDetail.getChapters(), "成功获取章节列表");
@@ -51,7 +51,7 @@ public class CourseController {
 //    }
 
     // 9. 获取章节资源列表
-    @GetMapping("/courses/chapters/{chapterId}/resources")
+    @GetMapping("/chapters/{chapterId}/resources")
     public CommonResponse<List<ResourceDTO>> getChapterResources(@PathVariable Integer chapterId) {
         System.out.println("进入获取章节资源列表接口，chapterId：" + chapterId);
         List<ResourceDTO> resources = courseService.getResourcesByChapterId(chapterId);

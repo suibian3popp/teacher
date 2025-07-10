@@ -11,9 +11,11 @@ import org.example.teacherservice.dto.assignment.AssignmentUpdateDTO;
 import org.example.teacherservice.entity.Assignment;
 import org.example.teacherservice.entity.AssignmentClasses;
 import org.example.teacherservice.entity.Resources;
+import org.example.teacherservice.entity.Classes;
 import org.example.teacherservice.exception.BusinessException;
 import org.example.teacherservice.mapper.AssignmentClassesMapper;
 import org.example.teacherservice.mapper.AssignmentMapper;
+import org.example.teacherservice.mapper.ClassesMapper;
 import org.example.teacherservice.mapper.ResourcesMapper;
 import org.example.teacherservice.response.PageParam;
 import org.example.teacherservice.response.PageResult;
@@ -42,6 +44,9 @@ public class AssignmentServiceImpl implements AssignmentService {
     private AssignmentClassesMapper assignmentClassesMapper;
     @Autowired
     private ResourcesMapper resourcesMapper;
+
+    @Autowired
+    private ClassesMapper classesMapper;
 
 
     @Override
@@ -220,5 +225,26 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
         return assignmentMapper.searchAssignments(titleKeyword, creatorId, status);
+    }
+    @Override
+    public List<Classes> getClassesByAssignmentId(Integer assignmentId) {
+        if (assignmentId == null || assignmentId <= 0) {
+            throw new BusinessException("作业ID不合法");
+        }
+
+        List<AssignmentClasses> assignmentClasses = assignmentClassesMapper.selectList(
+                new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<AssignmentClasses>()
+                        .eq("assignment_id", assignmentId)
+        );
+
+        if (assignmentClasses.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        List<Integer> classIds = assignmentClasses.stream()
+                .map(AssignmentClasses::getClassId)
+                .collect(Collectors.toList());
+
+        return classesMapper.selectBatchIds(classIds);
     }
 }

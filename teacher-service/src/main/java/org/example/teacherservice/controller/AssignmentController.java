@@ -9,6 +9,7 @@ import org.example.teacherservice.service.AssignmentService;
 import org.example.teacherservice.util.UserContext;
 
 import org.example.teacherservice.vo.AssignmentVO;
+import org.example.teacherservice.entity.Classes;
 import org.example.teacherservice.vo.assignment.AssignmentBasicVO;
 import org.example.teacherservice.vo.assignment.AssignmentResourceVO;
 import org.example.teacherservice.vo.assignment.AssignmentSearchResult;
@@ -139,6 +140,16 @@ public class AssignmentController {
         List<AssignmentSearchResult> result = assignmentService.searchAssignments(
                 titleKeyword, creatorId, status);
         return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 根据作业ID获取班级列表
+     * GET /service/assignment/{assignmentId}/classes
+     */
+    @GetMapping("/{assignmentId}/classes")
+    public ResponseEntity<List<Classes>> getClassesByAssignmentId(@PathVariable Integer assignmentId) {
+        List<Classes> classes = assignmentService.getClassesByAssignmentId(assignmentId);
+        return ResponseEntity.ok(classes);
     }
 
     /**

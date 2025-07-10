@@ -71,7 +71,7 @@ public class ResourcesController {
         }
 
         //使用用户ID作为存储桶名称
-        String bucketName = String.valueOf(ownerId);
+        String bucketName = "user-"+ ownerId;
 
         //获取文件原始名称和后缀
         String originalFilename = file.getOriginalFilename();
@@ -157,7 +157,10 @@ public class ResourcesController {
         //要想让浏览器弹出下载框，后端要设置一下响应头信息
         response.setContentType("application/octet-stream");
         response.setCharacterEncoding("utf-8");
-        response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(object, StandardCharsets.UTF_8));
+//        response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(object, StandardCharsets.UTF_8));
+
+        response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+
 
         GetObjectResponse getObjectResponse = minioClient.getObject(GetObjectArgs.builder()
                 .bucket(bucket)

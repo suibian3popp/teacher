@@ -45,6 +45,8 @@ public class AuthController {
         System.out.println("进入登录功能");
         User user = null;
         boolean passwordValid = false;
+        System.out.println("账号ID："+request.getUserId());
+        System.out.println("用户密码："+request.getPassword());
         
         // 获取有效的登录标识(userId或username)
         String loginId = request.getEffectiveId();
