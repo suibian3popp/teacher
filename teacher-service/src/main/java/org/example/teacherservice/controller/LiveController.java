@@ -56,6 +56,15 @@ public class LiveController {
             @RequestParam String role) {
         return liveSessionService.getTrtcParamsForSession(sessionId, userId, role);
     }
+    @GetMapping("/trtc-params")
+    @ResponseBody
+    public TrtcParams getTrtcParams_1(
+            @RequestParam int userId,
+            @RequestParam String role) {
+        return liveSessionService.getTrtcParamsForSession_1( userId, role);
+    }
+
+
 
 
     // 学生加入直播 - 使用@RequestParam获取studentId

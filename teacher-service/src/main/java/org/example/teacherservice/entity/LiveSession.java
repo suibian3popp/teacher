@@ -23,6 +23,7 @@ public class LiveSession {
      * 直播课标题
      */
     @TableField(value = "session_title")
+
     private String sessionTitle;
 
     /**

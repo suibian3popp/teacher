@@ -9,4 +9,6 @@ public interface TrtcService {
     String generateRoomId();
 
     TrtcParams getTrtcParams(LiveSession session,String userId);
+
+    TrtcParams getTrtcParams_1(String userId);
 }

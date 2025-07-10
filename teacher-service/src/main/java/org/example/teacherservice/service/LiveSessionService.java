@@ -15,4 +15,7 @@ public interface LiveSessionService extends IService<LiveSession>{
     LiveSession endLiveSession(int sessionId);
 
     TrtcParams getTrtcParamsForSession(int sessionId, int userId, String role);
+
+    TrtcParams getTrtcParamsForSession_1(int userId, String role);
+
 }
